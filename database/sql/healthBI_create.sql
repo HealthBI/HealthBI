@@ -1,5 +1,5 @@
 -- Created by Vertabelo (http://vertabelo.com)
--- Last modification date: 2022-01-25 18:01:34.355
+-- Last modification date: 2022-02-21 22:52:03.218
 
 -- tables
 -- Table: City
@@ -23,14 +23,14 @@ CREATE TABLE County (
 -- Table: DIM_LOCATION
 CREATE TABLE DIM_LOCATION (
     Location_UID bigserial  NOT NULL,
-    Country_Name text  NOT NULL,
-    Region_Name text  NOT NULL,
-    Division_Name text  NOT NULL,
-    State_Name text  NOT NULL,
-    County_Name text  NOT NULL,
-    City_Name text  NOT NULL,
-    Town_Name text  NOT NULL,
-    Neighborhood_Name text  NOT NULL,
+    Country_Name varchar(256)  NOT NULL,
+    Region_Name varchar(256)  NOT NULL,
+    Division_Name varchar(256)  NOT NULL,
+    State_Name varchar(256)  NOT NULL,
+    County_Name varchar(256)  NOT NULL,
+    City_Name varchar(256)  NOT NULL,
+    Town_Name varchar(256)  NOT NULL,
+    Neighborhood_Name varchar(256)  NOT NULL,
     CONSTRAINT StateValidation CHECK (CHECK ((Country_Name is not "NA") OR (State_Name is "NA"))) NOT DEFERRABLE INITIALLY IMMEDIATE,
     CONSTRAINT DIM_LOCATION_pk PRIMARY KEY (Location_UID)
 );
@@ -47,17 +47,17 @@ CREATE TABLE DIM_PROVIDER (
 -- Table: DIM_TEMPORAL
 CREATE TABLE DIM_TEMPORAL (
     Temporal_UID bigint  NOT NULL,
-    Year varchar(4)  NOT NULL,
-    Month_99 varchar(2)  NOT NULL,
-    Month_XXX varchar(3)  NOT NULL,
-    Month_Name varchar(9)  NOT NULL,
-    Month_XXX_Year varchar(8)  NOT NULL,
-    Day_99 varchar(2)  NOT NULL,
-    Day_Month_XXX_Year varchar(10)  NOT NULL,
-    DayOfWeek_XXX varchar(3)  NOT NULL,
-    Quarter_Q9 varchar(2)  NOT NULL,
-    Quarter_Q9_Year varchar(7)  NOT NULL DEFAULT "NA",
-    Season varchar(6)  NULL,
+    Year varchar(128)  NOT NULL,
+    Month_99 varchar(128)  NOT NULL,
+    Month_XXX varchar(128)  NOT NULL,
+    Month_Name varchar(128)  NOT NULL,
+    Month_XXX_Year varchar(128)  NOT NULL,
+    Day_99 varchar(128)  NOT NULL,
+    Day_Month_XXX_Year varchar(128)  NOT NULL,
+    DayOfWeek_XXX varchar(128)  NULL,
+    Quarter_Q9 varchar(128)  NULL,
+    Quarter_Q9_Year varchar(128)  NULL,
+    Season varchar(128)  NULL,
     CONSTRAINT Temporal_UID PRIMARY KEY (Temporal_UID)
 );
 
@@ -80,7 +80,7 @@ CREATE TABLE FACT_INDICATOR (
 -- Table: IMP_DATAFILE
 CREATE TABLE IMP_DATAFILE (
     Import_UID bigserial  NOT NULL,
-    DataFile_Name text  NOT NULL,
+    DataFile_Name varchar(256)  NOT NULL,
     Import_Timestamp timestamp  NOT NULL,
     DataSet_UID bigint  NOT NULL,
     CONSTRAINT IMP_DATAFILE_pk PRIMARY KEY (Import_UID)
@@ -89,7 +89,7 @@ CREATE TABLE IMP_DATAFILE (
 -- Table: IMP_DATASET
 CREATE TABLE IMP_DATASET (
     DataSet_UID bigserial  NOT NULL,
-    DataSet_Name text  NOT NULL,
+    DataSet_Name varchar(256)  NOT NULL,
     DataSource_UID bigint  NOT NULL,
     CONSTRAINT IMP_DATASET_pk PRIMARY KEY (DataSet_UID)
 );
@@ -97,7 +97,8 @@ CREATE TABLE IMP_DATASET (
 -- Table: IMP_DATASOURCE
 CREATE TABLE IMP_DATASOURCE (
     DataSource_UID bigserial  NOT NULL,
-    DataSource_Name text  NOT NULL,
+    DataSource_Name varchar(256)  NOT NULL,
+    DataSource_Source varchar(1024)  NOT NULL,
     CONSTRAINT IMP_DATASOURCE_pk PRIMARY KEY (DataSource_UID)
 );
 
@@ -128,24 +129,27 @@ CREATE TABLE Town (
 -- Table: VAR_CATEGORY
 CREATE TABLE VAR_CATEGORY (
     Category_UID bigserial  NOT NULL,
-    Category_Name text  NOT NULL,
+    Category_Name varchar(256)  NOT NULL,
+    CONSTRAINT VAR_CATEGORY_NAME_UK UNIQUE (Category_Name) NOT DEFERRABLE  INITIALLY IMMEDIATE,
     CONSTRAINT VAR_CATEGORY_pk PRIMARY KEY (Category_UID)
 );
 
 -- Table: VAR_INDICATOR
 CREATE TABLE VAR_INDICATOR (
     Indicator_UID bigserial  NOT NULL,
-    Indicator_Name text  NOT NULL,
-    Indicator_Unit text  NULL,
+    Indicator_Name varchar(256)  NOT NULL,
+    Indicator_Unit varchar(256)  NULL,
     Topic_UID bigint  NOT NULL,
+    CONSTRAINT VAR_INDICATOR_NAME_TOPIC_UK UNIQUE (Topic_UID, Indicator_Name) NOT DEFERRABLE  INITIALLY IMMEDIATE,
     CONSTRAINT VAR_INDICATOR_pk PRIMARY KEY (Indicator_UID)
 );
 
 -- Table: VAR_TOPIC
 CREATE TABLE VAR_TOPIC (
     Topic_UID bigserial  NOT NULL,
-    Topic_Name text  NOT NULL,
+    Topic_Name varchar(256)  NOT NULL,
     Category_UID bigint  NOT NULL,
+    CONSTRAINT VAR_TOPIC_NAME_CATEGORY_UK UNIQUE (Category_UID, Topic_Name) NOT DEFERRABLE  INITIALLY IMMEDIATE,
     CONSTRAINT VAR_TOPIC_pk PRIMARY KEY (Topic_UID)
 );
 
