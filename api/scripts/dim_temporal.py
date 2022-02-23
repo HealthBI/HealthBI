@@ -27,8 +27,6 @@ cur.execute(
 )
 insert_query_na = "INSERT INTO dim_temporal VALUES (-1, 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA');"
 cur.execute(insert_query_na)
-insert_query_global = "INSERT INTO dim_temporal VALUES (-2, 'Global', 'Global', 'Global', 'Global', 'Global', 'Global', 'Global', 'Global', 'Global', 'Global', 'Global');"
-cur.execute(insert_query_global)
 conn.commit()
 
 cur.execute("SELECT * from dim_temporal;")
@@ -45,7 +43,19 @@ def validate(date_text):
 
 def user_dictionary(filename):
     list_of_column_names = []
-    data_model_dict = {"Temporal_UID":""}
+    data_model_dict = { "DataSet_Name":"",
+                        "DataFile_Name": "",
+                        "Temporal_UID": {"column_name": "", "value": ""},
+                        "Location": [
+                            {"Country_Name": "", "Region_Name": "", "Division_Name": "", "State_Name": "",
+                            "County_Name": "", "City_Name": "","Town_Name": "", "Neighborhood_Name": ""}
+                        ],
+                        "Categories": "",
+                        "Topics": "",
+                        "Indicators": [
+                            {"Indicator_Name": "", "Indicator_Unit": ""}
+                        ]}
+
     with open(filename, 'r') as f:
         csv_reader = csv.reader(f)
         for row in csv_reader:
@@ -70,12 +80,16 @@ def parse_data(filename, data_model_dict):
             if not validate(row[temporal]):
                 print("Your temporal data at row %s as: %s" % (i, row[temporal]))
                 print("Incorrect data format, should be YYYY, or YYYYMM, or YYYYMMDD")
+                # 10000 record of incorrect data format echoed to a separate csv
             else:
                 # TODO: Automate other columns, such as year, month, date
                 # adding temporal value directly as primary keys
+                year = row[temporal][0:4]
+                #month = row[temporal][4:6] if len(row[temporal]) >= 6 else 'NA'
+                #day = row[temporal][6:8] if len(row[temporal]) >= 8 else 'NA'
                 cur.execute("INSERT INTO dim_temporal VALUES {}".format("(%s, \
-                                'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA') \
-                                ON CONFLICT (Temporal_UID) DO NOTHING;" % row[temporal]))
+                                %s, 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA') \
+                                ON CONFLICT (Temporal_UID) DO NOTHING;" % (row[temporal], year)))
             i += 1
     conn.commit()
 
