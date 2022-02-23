@@ -1,0 +1,22 @@
+{ "DataSet_Name":"CHSI",
+    "DataFile_Name": "DEMOGRAPHICS.csv",
+    "Temporal_UID": {"column_name": "", "value": ""},
+    "Location": [
+        {"Country_Name": "", "Region_Name": "", "Division_Name": "", "State_Name": "",
+        "County_Name": "", "City_Name": "","Town_Name": "", "Neighborhood_Name": ""}
+    ],
+    "Categories": [
+        {
+            "Category": "Demographics",
+            "Topics": {
+                "Topic": "Population",
+                "Indicators_Format": "Column",
+                "Indicators": 
+                [
+                    {"Indicator_Name": "Population_Size", "Indicator_Unit": "People"},
+                    {"Indicator_Name": "Population_Density", "Indicator_Unit": "Density"}
+                ]
+            }
+        }
+    ]
+}

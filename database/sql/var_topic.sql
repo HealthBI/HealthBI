@@ -1,8 +1,7 @@
 -- Table: VAR_TOPIC
 CREATE TABLE VAR_TOPIC (
-    Topic_UID bigserial  NOT NULL,
+    Topic_UID bigserial  PRIMARY KEY,
     Topic_Name varchar(256)  NOT NULL,
     Category_UID bigint  NOT NULL,
     CONSTRAINT VAR_TOPIC_NAME_CATEGORY_UK UNIQUE (Category_UID, Topic_Name) NOT DEFERRABLE  INITIALLY IMMEDIATE,
-    CONSTRAINT VAR_TOPIC_pk PRIMARY KEY (Topic_UID)
 );
