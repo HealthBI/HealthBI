@@ -1,57 +1,67 @@
-from http.client import CONFLICT
-from re import T
-from matplotlib.pyplot import table
-import psycopg2, csv
+import os
+from random import randint
+from signal import valid_signals
+import sys
+import csv
 import json
+import psycopg2
+from pandas import *
 from datetime import datetime
-from api.scripts.shape_csv import ShapeCSV
 
-class dim_temporal(ShapeCSV):
+class DimTemporal():
     """
     Shapes csv dim_temporal columns.
     """
-    def __init__(self, csv_file):
-        super().__init__(csv_file)
-        self.csvAsDict(self.csv_file)
-        # data_model_dict = self.user_dictionary("temporal_test.csv")
-        # self.parse_data("temporal_test.csv", data_model_dict)
+    def __init__(self, csv_file, json_file, db_conn, db_cur):
+        self.csv_file = csv_file
+        self.json_file = json_file
+        self.db_conn = db_conn
+        self.db_cur = db_cur
+        self.json_temporal_cols = []
+        self.temporal_vals = {}
 
-    def validate(self,date_text):
-        for fmt in ('%Y', '%Y%m', '%Y%m%d'):
-            try:
-                return datetime.strptime(date_text, fmt)
-            except ValueError:
-                pass
-        return False
+    def get_json_cols(self):
+        """
+        Get all json cols for temporal. Based off known required data model fields.
+        Temporal columns: "Temporal_UID": {"column_name": "Year", "value": ""},
+        returns if temporal is a column or value
+        """
+        with open(self.json_file) as json_file:
+            dictData = json.load(json_file)
+            for x in dictData['Temporal_UID']:
+                tmp = dictData['Temporal_UID'][x]
+                self.json_temporal_cols.append(tmp)
+        return self.json_temporal_cols
 
-    def prompt_temporal(self):
-        print('List of column names : ', self.cvs_columns[0])
-        temporal_uid = input("Enter temporal column:") #Ask user for temporal column name
-        self.req_data_model_dict["Temporal_UID"] = temporal_uid #Update temporal column
+    def get_csv_vals(self, json_cols):
+        """
+        This is only called if column_name was given in json
+        """
+        key = json_cols[0]
+        with open(self.csv_file, mode='r', encoding="utf-8-sig") as csv_file:
+            data = read_csv(self.csv_file)
+            self.temporal_vals[key] = data[key].tolist()
+        # Remove duplicate values in list
+        for i in self.temporal_vals:
+            tmp = []
+            [tmp.append(x) for x in self.temporal_vals[i] if x not in tmp]
+            self.temporal_vals[i] = tmp
+    
+    def do_data_injection(self):
+        """
+        if given a column_name:
+            For every value in temporal column, inject into the dim_temporal table
+        """
+        #TODO: create unique temproral_uid
+        sql = "INSERT INTO dim_temporal VALUES ('4', %s, 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA')"
+        col_name = self.json_temporal_cols[0]
+        all_vals = self.temporal_vals.get(col_name)
+        self.db_cur.execute(sql, [all_vals])
+        self.db_conn.commit()
+        print(self.db_cur.rowcount, "records inserted.")
 
-    def parse_data(self,filename, data_model_dict):
-        conn = psycopg2.connect("host=localhost dbname=postgres user=postgres")
-        cur = conn.cursor()
-        with open(filename, 'r') as f:
-            reader = csv.DictReader(f)
-            temporal = data_model_dict["Temporal_UID"]
-            i = 1 #row count
-            for row in reader:
-                # Check format of temporal input is of format YYYY, YYYYMM, or YYYYMMDD 
-                if not validate(row[temporal]):
-                    print("Your temporal data at row %s as: %s" % (i, row[temporal]))
-                    print("Incorrect data format, should be YYYY, or YYYYMM, or YYYYMMDD")
-                    # 10000 record of incorrect data format echoed to a separate csv
-                else:
-                    # TODO: Automate other columns, such as year, month, date
-                    # adding temporal value directly as primary keys
-                    year = row[temporal][0:4]
-                    #month = row[temporal][4:6] if len(row[temporal]) >= 6 else 'NA'
-                    #day = row[temporal][6:8] if len(row[temporal]) >= 8 else 'NA'
-                    cur.execute("INSERT INTO dim_temporal VALUES {}".format("(%s, \
-                                    %s, 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA') \
-                                    ON CONFLICT (Temporal_UID) DO NOTHING;" % (row[temporal], year)))
-                i += 1
-        conn.commit()
+        self.db_cur.execute("select * from dim_temporal")
+        result = self.db_cur.fetchall()
+        print(result)
 
     # TODO: create new object for every new temporal object (1. 2021, 2. 2022)
