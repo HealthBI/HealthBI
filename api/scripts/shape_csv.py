@@ -26,6 +26,8 @@ class ShapeCSV:
                 if line_count == 0:
                     self.cvs_columns.append(f'{", ".join(row)}')
                     break
+            
+        print("cols:", self.cvs_columns)
                     # line_count += 1
                 # line_count += 1
             # print(f'Processed {line_count} lines.')
@@ -36,7 +38,7 @@ class ShapeCSV:
         Gets the correct colomns needed for dim_temporal, dim_location, and fact_indicator.
         """
         status = self.compare_csv_to_json()
-        status = self.run_injections()
+        # status = self.run_injections()
         return status
 
     def compare_csv_to_json(self):
@@ -48,6 +50,8 @@ class ShapeCSV:
         # if column_name was given, look for values, if not do injection with given value
         if temp_json_cols[0] != '':
             self.dim_temporal.get_csv_vals(temp_json_cols)
+        elif temp_json_cols[1] != '':
+            self.dim_temporal.do_value_injection(temp_json_cols[1])
         return True 
 
     def run_injections(self):

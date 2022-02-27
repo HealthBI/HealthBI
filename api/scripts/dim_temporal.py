@@ -1,13 +1,5 @@
-import os
-from random import randint
-from signal import valid_signals
-import sys
-import csv
 import json
-import psycopg2
 from pandas import *
-from datetime import datetime
-
 class DimTemporal():
     """
     Shapes csv dim_temporal columns.
