@@ -47,13 +47,26 @@ class DimTemporal():
             [tmp.append(x) for x in self.temporal_vals[i] if x not in tmp]
             self.temporal_vals[i] = tmp
     
+    def do_value_injection(self, value):
+        """
+        This is called when a value is given as the Temporal_UID.
+        """
+        sql = "INSERT INTO dim_temporal VALUES ('6', %s, 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA')"
+        self.db_cur.execute(sql, [value])
+        self.db_conn.commit()
+        print(self.db_cur.rowcount, "records inserted.")
+
+        self.db_cur.execute("select * from dim_temporal")
+        result = self.db_cur.fetchall()
+        print(result)
+    
     def do_data_injection(self):
         """
         if given a column_name:
             For every value in temporal column, inject into the dim_temporal table
         """
         #TODO: create unique temproral_uid
-        sql = "INSERT INTO dim_temporal VALUES ('4', %s, 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA')"
+        sql = "INSERT INTO dim_temporal VALUES ('5', %s, 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA')"
         col_name = self.json_temporal_cols[0]
         all_vals = self.temporal_vals.get(col_name)
         self.db_cur.execute(sql, [all_vals])
