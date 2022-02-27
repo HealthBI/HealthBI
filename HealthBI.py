@@ -11,6 +11,7 @@ class HealthBI:
     def __init__(self, csv_file, json_file):
         self.csv_file = csv_file
         self.json_file = json_file
+        # Connect to database.
         self.conn, self.cursor = self.connect_to_database()
         status = self.shape_csv()
         if status == True:
@@ -20,6 +21,9 @@ class HealthBI:
         self.conn.close()
     
     def connect_to_database(self):
+        """
+        Connection to database happens once. The conn and curser is passed into and used by the other objects.
+        """
         conn = psycopg2.connect(
                     database="HealthBI", 
                     user="postgres"

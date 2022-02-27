@@ -58,10 +58,12 @@ class DimTemporal():
             For every value in temporal column, inject into the dim_temporal table
         """
         #TODO: create unique temproral_uid
-        sql = "INSERT INTO dim_temporal VALUES ('5', %s, 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA')"
+        sql = "INSERT INTO dim_temporal VALUES ('7', %s, 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA')"
         col_name = self.json_temporal_cols[0]
         all_vals = self.temporal_vals.get(col_name)
-        self.db_cur.execute(sql, [all_vals])
+        print(all_vals)
+        # wrap all vals in a tuple
+        self.db_cur.executemany(sql, [all_vals])
         self.db_conn.commit()
         print(self.db_cur.rowcount, "records inserted.")
 
