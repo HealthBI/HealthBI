@@ -1,5 +1,11 @@
 import json
 from pandas import *
+
+class Location:
+    def __init__(self, location):
+        self.location_uid = None
+        self.location = location
+
 class DimLocation():
     """
     Shapes csv dim_location columns.

@@ -1,8 +1,30 @@
+from ast import ImportFrom
 import csv
+
+from api.scripts.fact_indicators import FactIndicator
 from .dim_temporal import DimTemporal
-from .dim_location import DimLocation
+from .dim_location import DimLocation, Location
+from .var_indicators import VarIndicator
+import posgresql
 
 class ShapeCSV:
+    '''
+    temporals = []
+    locations = []
+    indicators = []
+    facts = []
+    row by row
+        temp = temporals.append(temporal)
+        loc = locations.append(location)
+        indi = indicators.append(indicator)
+        fact = facts.append(fact_ind(temp, loc, indi, val))
+    done reading csv
+    inject(temporals) -> update each temp.uid
+    inject(locations) -> update each loc.uid
+    inject(indicators) -> update each indi.uid
+    inject(fact) -> 
+    '''
+
     """
     Takes in csv and fits columns and data to the data model.
     """
@@ -13,13 +35,16 @@ class ShapeCSV:
         self.db_cur = db_cursor
         self.cvs_columns = []
         self.json_columns = []
-
+        self.var_indicators = []
+        self.dim_temporal = DimTemporal().temporal_vals
         # Get columns of CSV
         self.get_csv_cols()
         # Initialize required fields
         # self.dim_temporal = DimTemporal(self.csv_file, self.json_file, self.db_conn, self.db_cur)
         self.dim_location = DimLocation(self.csv_file, self.json_file, self.db_conn, self.db_cur)
 
+    def get_csv_row(self, column_name):
+        
     def get_csv_cols(self):
         with open(self.csv_file, mode='r', encoding="utf-8-sig") as csv_file:
             csv_reader = csv.DictReader(csv_file)
@@ -33,13 +58,6 @@ class ShapeCSV:
             # print(f'Processed {line_count} lines.')
             # print(f'Column names: {self.cvs_columns}')
 
-    def run_shaping(self):
-        """
-        Gets the correct colomns needed for dim_temporal, dim_location, and fact_indicator.
-        """
-        status = self.compare_csv_to_json()
-        status = self.run_injections()
-        return status
 
     def compare_csv_to_json(self):
         """
@@ -56,9 +74,43 @@ class ShapeCSV:
         loc_json_cols = self.dim_location.get_json_cols()
         return True 
 
-    def run_injections(self):
-        # self.dim_temporal.do_data_injection()
+    def addVarIndicator(self, indicator):
+        for i in self.var_indicators:
+            if i == indicator:
+                print("This indicator already exists in this database.")
+            else:    
+                self.var_indicators.append(indicator)
+                print("A new indicator: %s has been added." % (indicator.indicator_name))
         return True
 
     def createFact(self):
+        #column
+        self.dim_temporal = DimTemporal().temporal_vals
+
+        # row by row
+        temp = self.temporals.addTemporal(Temporal(temporal))
+        # returns a loc inside the list of location objects
+        loc = self.locations.addLocation(Location('US', 'AL', 'City')) #do not add if already exist
+
+        fact_indicator = FactIndicator(temporal, loc, indicator, data)
         pass
+
+    def run_injections(self):
+        # self.dim_temporal.do_data_injection()
+        # upon finishing reading csv completely
+        # indicator object list injection
+        for indicator in self.var_indicators:
+            indicator.indicator_uid = insertIndicatorToDB(indicator)
+        # location object list injection
+        # temporal object list injection
+
+        return True
+
+    
+    def run_shaping(self):
+        """
+        Gets the correct colomns needed for dim_temporal, dim_location, and fact_indicator.
+        """
+        status = self.compare_csv_to_json()
+        status = self.run_injections()
+        return status

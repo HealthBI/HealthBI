@@ -1,5 +1,13 @@
 import json
 from pandas import *
+class Temporal:
+    def __init__(self, temporal):
+        self.temporal_uid = None
+        self.temporal = temporal
+
+# [2021, 2102, 2131]
+# [2021, lcoation, indicator, value]
+
 class DimTemporal():
     """
     Shapes csv dim_temporal columns.
