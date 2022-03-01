@@ -1,5 +1,5 @@
 import csv
-import dim_temporal
+from dim_temporal import Temporal
 '''
 temporals = []
 locations = []
@@ -41,5 +41,6 @@ class HealthBIData:
         indi = indicators.append(indicator)
         fact = facts.append(fact_ind(temp, loc, indi, val))
         '''
+        temporal = get_csv_row(temporal_column_name)
         temp = createNewTemporal(Temporal(temporal))
         pass
