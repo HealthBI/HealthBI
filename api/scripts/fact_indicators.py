@@ -1,4 +1,10 @@
-from .var_indicator import VarIndicator
-from .dim_temporal import DimTemporal
-from .dim_location import DimLocation
+import var_indicator
+import dim_temporal
+import dim_location
 
+class FactIndicator:
+    def __init__(self, temporal, location, indicator, data):
+        self.temporal = temporal #Temporal object
+        self.location = location
+        self.indicator = indicator
+        self.data = data

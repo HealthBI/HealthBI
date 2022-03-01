@@ -4,7 +4,7 @@ import csv
 from api.scripts.fact_indicators import FactIndicator
 from .dim_temporal import DimTemporal
 from .dim_location import DimLocation, Location
-from .var_indicators import VarIndicator
+from .var_indicator import VarIndicator
 import posgresql
 
 class ShapeCSV:
@@ -44,7 +44,8 @@ class ShapeCSV:
         self.dim_location = DimLocation(self.csv_file, self.json_file, self.db_conn, self.db_cur)
 
     def get_csv_row(self, column_name):
-        
+        pass
+    
     def get_csv_cols(self):
         with open(self.csv_file, mode='r', encoding="utf-8-sig") as csv_file:
             csv_reader = csv.DictReader(csv_file)

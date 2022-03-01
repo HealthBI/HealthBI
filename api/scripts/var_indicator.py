@@ -22,9 +22,7 @@ class VarIndicator(VarTopic):
         self.indicator_unit = indicator_unit
 
     def __eq__(self, other):
-             if self.category_name ==other.category_name and self.topic_name==other.topic_name and self.indicator_name==other.indicator_name:
-                  return True
-             else:
-                  return False
-
-    def 
+            if self.category_name ==other.category_name and self.topic_name==other.topic_name and self.indicator_name==other.indicator_name:
+                return True
+            else:
+                return False
