@@ -1,3 +1,9 @@
+import os
+import re
+from random import randint
+from signal import valid_signals
+import sys
+import csv
 import json
 from pandas import *
 class Temporal:
@@ -46,6 +52,18 @@ class DimTemporal():
             tmp = []
             [tmp.append(x) for x in self.temporal_vals[i] if x not in tmp]
             self.temporal_vals[i] = tmp
+
+    def increment_temporal(self, column_name, value):
+
+        self.db_cur.execute("SELECT LAST(temporal_uid) FROM dim_temporal")
+        temporal = self.db_cur.fetchall()
+
+        num = int(re.findall('[0-9]+', temporal))
+        num += 1
+        
+        tem = "tem" + str(int)
+
+        return tem
     
     def do_value_injection(self, value):
         """
