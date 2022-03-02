@@ -2,11 +2,13 @@
 import os
 import sys
 import psycopg2
-from api.scripts.shape_csv import ShapeCSV
+from api.shape_csv import ShapeCSV
+from api.inject_csv import InjectCSV
 
 class HealthBI:
     """
     HealthBI.py takes in a csv file as an argument and shapes it to fit the data model.
+    This class acts as the Data Controller. 
     """
     def __init__(self, csv_file, json_file):
         self.csv_file = csv_file
@@ -14,6 +16,7 @@ class HealthBI:
         # Connect to database.
         self.conn, self.cursor = self.connect_to_database()
         status = self.shape_csv()
+        status = self.inject_shaped_csv()
         if status == True:
             print("Data successfully processed.")
         else:
@@ -35,8 +38,19 @@ class HealthBI:
         return conn, cursor
     
     def shape_csv(self):
-        shape = ShapeCSV(self.csv_file, self.json_file, self.conn, self.cursor)
+        """
+        Data gets shaped to fit the data model.
+        """
+        shape = ShapeCSV(self.csv_file, self.json_file)
         status = shape.run_shaping()
+        return status
+
+    def inject_shaped_csv(self):
+        """
+        Injects the new unique objects the database.
+        """
+        inject = InjectCSV(self.conn, self.cursor)
+        status = inject.run_injection()
         return status
 
 if __name__=="__main__":
