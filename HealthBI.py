@@ -15,12 +15,14 @@ class HealthBI:
         self.json_file = json_file
         # Connect to database.
         self.conn, self.cursor = self.connect_to_database()
-        status = self.shape_csv()
-        status = self.inject_shaped_csv()
-        if status == True:
-            print("Data successfully processed.")
-        else:
-            print("Data failed processed.")
+        # Run shaping.
+        self.shape = None
+        self.shape_csv()
+        # All lists of objects.
+        self.dim_temporal_objs = self.shape.dim_temporal.temporal_objs
+        print(f'dim_temporal_objs: {self.dim_temporal_objs}\n')
+        self.inject_shaped_csv()
+        # print("Data successfully processed.\n")
         self.conn.close()
     
     def connect_to_database(self):
@@ -34,24 +36,24 @@ class HealthBI:
         cursor = conn.cursor()
         cursor.execute("select version()")
         data = cursor.fetchone()
-        print("Connection established to: ",data)
+        print("Connection established to: {}.\n".format(data))
         return conn, cursor
     
     def shape_csv(self):
         """
         Data gets shaped to fit the data model.
         """
-        shape = ShapeCSV(self.csv_file, self.json_file)
-        status = shape.run_shaping()
-        return status
+        self.shape = ShapeCSV(self.csv_file, self.json_file)
+        self.shape.run_shaping()
+        return
 
     def inject_shaped_csv(self):
         """
         Injects the new unique objects the database.
         """
-        inject = InjectCSV(self.conn, self.cursor)
-        status = inject.run_injection()
-        return status
+        self.inject = InjectCSV(self.conn, self.cursor, self.dim_temporal_objs)
+        self.inject.run_injection()
+        return
 
 if __name__=="__main__":
     if len(sys.argv) == 3:
