@@ -1,0 +1,17 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Upload Data page</h1>
+  <p>Welcome to the upload page</p>
+  <h2>Upload csv files here</h2>
+  <label for="csvFileUPload">Choose a profile picture:</label>
+
+  <input type="file"
+         id="csvFileUPload" name="avatar"
+         accept="csv">
+
+  <p>This content displayed from content passed to page:</p>
+  <ul>
+    <li><strong>Content:</strong> {{ test }}</li>
+  </ul>
+{% endblock %}
