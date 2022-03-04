@@ -27,29 +27,27 @@ class InjectCSV():
             if hasattr(obj,'temporal_uid'):
                 break
             else:
-                tem_uid = self.increment_temporal_uid()
+                tem_uid = self.create_temporal_uid()
                 setattr(obj,'temporal_uid', tem_uid) 
             # Insert the object. NOTE: This only injects year. Get json column name
             tem_uid = getattr(obj, 'temporal_uid')
             tem_value = getattr(obj, 'value')
-            # print(int(tem_uid))
-            # print(tem_value)
-            # TODO: Insert if json val col does not exist in database
-            sql = ("IF NOT EXISTS (SELECT year FROM dim_temporal)\
-                    BEGIN\
-                    INSERT INTO dim_temporal\
-                    VALUES ('{}', '{}', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA')\
-                    END;".format(tem_uid, tem_value))
+            print(int(tem_uid))
+            print(tem_value)
+            # TODO: Insert if json val col does not exist in database. Check the uid after editing incrementation, select count is the best way to check for uniqueness
+            sql = ("INSERT INTO dim_temporal VALUES ('{}', '{}', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA') WHERE ON CONFLICT DO NOTHING;".format(tem_uid, tem_value))
             self.curr.execute(sql)
             self.conn.commit()
             print(self.curr.rowcount, "records inserted.")
 
-    def increment_temporal_uid(self):
+    def create_temporal_uid(self):
         """
-        Increment temporal_uid.
+        Creates temporal_uid. Mask to correct number of digits, year, month, and day (bigint)
         """
+        # TODO: for devang, temporal_uid has to be format yearmonthday (12341212)
         self.curr.execute("SELECT temporal_uid FROM dim_temporal ORDER BY temporal_uid DESC LIMIT 1")
         latest_tem_uid = self.curr.fetchall()
+        print(latest_tem_uid)
         num = int(re.findall('[0-9]+', str(latest_tem_uid))[0])
         num += 1
         return num
