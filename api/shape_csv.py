@@ -2,7 +2,7 @@
 import csv
 from pandas import *
 from .scripts.dim_temporal import DimTemporal
-from .dimScripts.dim_location import DimLocation
+from .scripts.dim_location import DimLocation
 # from .dimScripts.var_indicator import VarIndicator
 # from .dimScripts.fact_indicators import FactIndicator
 
@@ -19,6 +19,7 @@ class ShapeCSV:
         self.fact_indicator_objs = []
         # Initiate dimension objects. These store the list of objects.
         self.dim_temporal = DimTemporal(self.json_file)
+        self.dim_location = DimLocation(self.json_file)
 
     def run_shaping(self):
         """
@@ -44,6 +45,7 @@ class ShapeCSV:
             csv_reader = csv.DictReader(csv_file)
             # Get json values for temporal, location, indicator, and fact_indicator.
             dim_temporal_json, dim_is_value = self.dim_temporal.get_json_cols()
+            # dim_location_json = self.dim_location.get_json_cols()
             if dim_is_value:
                 self.dim_temporal.create_new_temporal_object(dim_temporal_json)
             # Start at the first row of data
