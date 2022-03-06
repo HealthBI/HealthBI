@@ -28,7 +28,6 @@ class ShapeCSV:
         """
         # Get columns of CSV
         self.get_csv_cols()
-        # print(self.csv_columns)
         self.parse_csv_for_objects()
 
     def get_csv_cols(self):
@@ -45,17 +44,21 @@ class ShapeCSV:
             csv_reader = csv.DictReader(csv_file)
             # Get json values for temporal, location, indicator, and fact_indicator.
             dim_temporal_json, dim_is_value = self.dim_temporal.get_json_cols()
-            # dim_location_json = self.dim_location.get_json_cols()
+            dim_location_json = self.dim_location.get_json_cols()
             if dim_is_value:
                 self.dim_temporal.create_new_temporal_object(dim_temporal_json)
             # Start at the first row of data
             line_count = 1
             for row in csv_reader:
                 if dim_is_value == False:
-                    self.temporal_val = self.dim_temporal.get_csv_val(row, dim_temporal_json)
-                    # Create new temporal object if unique.
-                    self.dim_temporal.create_new_temporal_object(self.temporal_val)
+                    # TEMPORAL
+                    temporal_val = self.dim_temporal.get_csv_val(row, dim_temporal_json)
+                    self.dim_temporal.create_new_temporal_object(temporal_val)
+                # LOCATION
+                location_vals = self.dim_location.get_csv_val(row, dim_location_json)
+                self.dim_location.create_new_location_object(location_vals)
                 line_count += 1
+            # print(self.dim_location.location_vals)
             print(f'Processed {line_count} lines.\n')
         # print(f'dim_temporal_objs: {self.dim_temporal.temporal_objs}\n')
 

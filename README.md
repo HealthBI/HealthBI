@@ -1,6 +1,6 @@
 # HealthBI
 
-Requirements:
+Requirements/Dependecies:
 - Python version: 
 - Install pandas: `pip install pandas`
 - Install postgres
