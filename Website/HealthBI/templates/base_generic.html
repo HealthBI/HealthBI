@@ -16,7 +16,7 @@
       {% block sidebar %}
         <ul class="sidebar-nav">
           <li><a href="{% url 'index' %}">Home</a></li>
-          <li><a href="upload">Data Upload</a></li>
+          <li><a href="{% url 'upload_page' %}">Data Upload</a></li>
           <li><a href="{% url 'analysis' %}">Analysis</a></li>
         </ul>
      {% endblock %}
