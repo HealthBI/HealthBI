@@ -26,7 +26,7 @@ def analysis(request):
     return render(request, 'analysis.html', context=context)
 
 def upload_csv(request):
-    
+
     csv_file = request.FILES["csv_file"]
 
     file_data = csv_file.read().decode("utf-8")		
@@ -42,7 +42,13 @@ def upload_csv(request):
         data_dict["Indicator2"] = fields[3]
 
         context = {
-        'data': data_dict
+        'data': data_dict,
+        'file': file_data
         }
 
         return render(request, 'dictionaryMappings.html', context=context)
+
+
+def uploadCsvWithMappings(request):
+    ##Call the scripts with dictionary mappings + csv file content
+    pass
