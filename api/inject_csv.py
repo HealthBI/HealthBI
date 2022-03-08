@@ -16,7 +16,7 @@ class InjectCSV():
         self.conn = conn
         self.curr = cursor
         #self.dim_temporal_objs = shape.dim_temporal_objs
-        #self.temporals = shape.dim_temporal_objs.temporals
+        self.temporals = shape.dim_temporal_objs.temporals
         self.locations = shape.dim_location_objs.locations
 
         self.categories = shape.var_category_objs.categories
@@ -26,19 +26,36 @@ class InjectCSV():
         """
         For every object, give it a unique id and inject into HealthBI database.
         """
-        #self.insert_temporal()
         self.insert_temporals()
         self.insert_categories()
         self.insert_topics()
         self.insert_indicator()
 
+    def get_temporal_info(self, tem_value):
+        """
+        Breaks up the given temporal value to get uid and value.
+        """
+        uid = getattr(tem_value, "temporal_uid")
+        value = getattr(tem_value, "temp_value")
+        year = tem_value[0:3]
+        month = tem_value[4:5]
+        day = tem_value[6:7]
+        return uid, year, month, day
+
     def insert_temporals(self):
         print("INSERTING temporals...")
-        for temp in self.temporals:
+        if len(self.temporals) == 1:
+            uid, year, month, day = self.get_temporal_info(self.temporals[0])
             sql = ("INSERT INTO dim_temporal VALUES ('{}', '{}', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA') \
-                    ON CONFLICT(temporal_uid) \
-                    DO UPDATE SET temporal_uid=EXCLUDED.temporal_uid \
-                    RETURNING temporal_uid".format(temp.temporal_uid, temp.year))
+                        ON CONFLICT(temporal_uid) \
+                        DO UPDATE SET temporal_uid=EXCLUDED.temporal_uid \
+                        RETURNING temporal_uid".format(uid, year))
+        else:
+            for temp in self.temporals:
+                sql = ("INSERT INTO dim_temporal VALUES ('{}', '{}', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA') \
+                        ON CONFLICT(temporal_uid) \
+                        DO UPDATE SET temporal_uid=EXCLUDED.temporal_uid \
+                        RETURNING temporal_uid".format(temp.temporal_uid, temp.year))
 
     def insert_categories(self):
         print("INSERTING categories...")

@@ -10,6 +10,18 @@ class Temporal:
     def __init__(self, temporal_uid, temp_value):
         self.temporal_uid = temp_value
         self.temp_value = temp_value
+        # Possible temporal attributes.
+        # Year varchar(128)  NOT NULL,
+        # Month_99 varchar(128)  NOT NULL,
+        # Month_XXX varchar(128)  NOT NULL,
+        # Month_Name varchar(128)  NOT NULL,
+        # Month_XXX_Year varchar(128)  NOT NULL,
+        # Day_99 varchar(128)  NOT NULL,
+        # Day_Month_XXX_Year varchar(128)  NOT NULL,
+        # DayOfWeek_XXX varchar(128)  NULL,
+        # Quarter_Q9 varchar(128)  NULL,
+        # Quarter_Q9_Year varchar(128)  NULL,
+        # Season varchar(128)  NULL,
     def __eq__(self, other):
         return self.temp_value == other.temp_value
 

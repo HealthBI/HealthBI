@@ -57,8 +57,8 @@ class ShapeCSV:
         if mapping["Var_Indicators_Format"] == "Column_Header":
             print("Indicators' names are in column headers.")
             self.var_category_objs, self.var_topic_objs, self.var_indicator_objs = IndicatorController().create_var_indicator_with_mapping(mapping)
-        #if mapping["Temporal_UID"]["value"] != "" and self.mapping["Temporal_UID"]["column_name"] == "":
-            #self.dim_temporal_objs.create_new_temporal_object(mapping["Temporal_UID"]["value"])
+        if mapping["Temporal_UID"]["value"] != "" and self.mapping["Temporal_UID"]["column_name"] == "":
+            self.dim_temporal_objs.create_new_temporal_object("value", mapping["Temporal_UID"]["value"])
         with open(self.csv_file, mode='r', encoding="utf-8-sig") as csv_file:
             # Get json values for temporal, location, indicator, and fact_indicator.
             dim_location_json = self.dim_location_objs.get_json_cols()
