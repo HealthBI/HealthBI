@@ -1,0 +1,11 @@
+{ "DataSet_Name":"CHSI",
+    "DataFile_Name": "National.csv",
+    "Temporal_UID": {"column_name": "", "value": ""},
+    "Location": [
+        {"Country_Name": "", "Region_Name": "", "Division_Name": "", "State_Name": "",
+        "County_Name": "", "City_Name": "","Town_Name": "", "Neighborhood_Name": ""}
+    ],
+    "Category": {"column_name": ["Category"], "value": ""},
+    "Topic": {"column_name": ["Population"], "value": ""},
+    "Indicator": ["BreakOutCategory", "Breakout"]
+}

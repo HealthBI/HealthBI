@@ -13,14 +13,15 @@ class HealthBI:
     def __init__(self, csv_file, json_file):
         self.csv_file = csv_file
         self.json_file = json_file
+        self.inject = None
         # Connect to database.
         self.conn, self.cursor = self.connect_to_database()
         # Run shaping.
         self.shape = None
         self.shape_csv()
         # All lists of objects.
-        self.dim_temporal_objs = self.shape.dim_temporal.temporal_objs
-        print(f'dim_temporal_objs: {self.dim_temporal_objs}\n')
+        #self.dim_temporal_objs = self.shape.dim_temporal.temporal_objs
+        #print(f'dim_temporal_objs: {self.dim_temporal_objs}\n')
         self.inject_shaped_csv()
         # print("Data successfully processed.\n")
         self.conn.close()
@@ -30,7 +31,7 @@ class HealthBI:
         Connection to database happens once. The conn and curser is passed into and used by the other objects.
         """
         conn = psycopg2.connect(
-                    database="HealthBI", 
+                    database="healthbi", 
                     user="postgres"
         )
         cursor = conn.cursor()
@@ -51,7 +52,7 @@ class HealthBI:
         """
         Injects the new unique objects the database.
         """
-        self.inject = InjectCSV(self.conn, self.cursor, self.dim_temporal_objs)
+        self.inject = InjectCSV(self.conn, self.cursor, self.shape)
         self.inject.run_injection()
         return
 

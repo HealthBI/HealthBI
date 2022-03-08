@@ -52,6 +52,4 @@ class DimTemporal(Temporal):
         """
         Create a new temporal object if unique value. Not given a temporal_uid.
         """
-        if value not in self.temporal_val:
-            self.temporal_val.append(value)
-            self.temporal_objs.append(Temporal(value))
+ 
