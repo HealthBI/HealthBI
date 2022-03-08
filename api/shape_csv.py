@@ -1,7 +1,9 @@
 #!/usr/bin/python
 import csv, json
 from pandas import *
-from api.scripts.var_indicator import Categories, IndicatorController, Topics, Indicators
+import sys, os
+
+from api.scripts.var_indicator import IndicatorController
 from api.scripts.dim_temporal import DimTemporal
 from api.scripts.dim_location import DimLocation
 # from .dimScripts.var_indicator import VarIndicator
@@ -77,6 +79,5 @@ class ShapeCSV:
                 #location_vals = self.dim_location.get_csv_val(row, dim_location_json)
                 self.dim_location_objs.create_new_location_object(row, dim_location_json)
                 line_count += 1
-            print(self.dim_location_objs.locations)
             print(f'Processed {line_count} lines.\n')
         # print(f'dim_temporal_objs: {self.dim_temporal.temporal_objs}\n')

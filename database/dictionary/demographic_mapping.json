@@ -1,11 +1,10 @@
-{   
-    "DataSet_Name":"CHSI",
-    "DataFile_Name": "DEMOGRAPHICS.csv",
-    "Temporal_UID": {"column_name": "", "value": "200001"},
+{ "DataSet_Name":"Tem",
+    "DataFile_Name": "temporal_test.csv",
+    "Temporal_UID": {"column_name": "", "value": "2011"},
     "Location": [
-        {"Country_Name": "", "Region_Name": "", "Division_Name": "", "State_Name": "",
-        "County_Name": "", "City_Name": "","Town_Name": "", "Neighborhood_Name": ""}
-    ],
+        {"Country_Name": "country", "Region_Name": "NA", "Division_Name": "NA", "State_Name": "CHSI_State_Name",
+        "County_Name": "CHSI_County_Name", "City_Name": "NA","Town_Name": "NA", "Neighborhood_Name": "NA"}
+    ],    
     "Var_Indicators_Format": "Column_Header",
     "Categories": [
         {

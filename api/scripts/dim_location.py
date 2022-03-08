@@ -8,25 +8,25 @@ class Location:
     """
     Location Object
     """
-    def __init__(self, country_name, region_name, devision_name, state_name, county_name, city_name, town_name, neighborhoood_name, location_uid=None):
+    def __init__(self, country_name, region_name, devision_name, state_name, county_name, city_name, town_name, neighborhood_name, location_uid=None):
         self.uid = location_uid
         self.country_name = country_name
         self.region_name = region_name
-        self.devision_name = devision_name
+        self.division_name = devision_name
         self.state_name = state_name
         self.county_name = county_name
         self.city_name = city_name
         self.town_name = town_name
-        self.neighborhood_name = neighborhoood_name
+        self.neighborhood_name = neighborhood_name
 
     def __eq__(self, other):
-        if self.country_name==other.country_name and self.region_name==other.region_name and self.devision_name==other.devision_name and self.state_name==other.state_name and self.county_name==other.county_name and self.city_name==other.city_name and self.town_name==other.town_name and self.neighborhood_name==other.neighborhood_name:
+        if self.country_name==other.country_name and self.region_name==other.region_name and self.division_name==other.division_name and self.state_name==other.state_name and self.county_name==other.county_name and self.city_name==other.city_name and self.town_name==other.town_name and self.neighborhood_name==other.neighborhood_name:
             return True
         else:
             return False
 
 
-class DimLocation(Location):
+class DimLocation():
     """
     Shapes csv dim_location columns.
     """
@@ -34,7 +34,7 @@ class DimLocation(Location):
         self.json_file = json_file
         self.json_location_cols = {}
         self.location_vals = []
-        self.location_objs = []
+        self.locations = []
 
     def get_json_cols(self):
         """
@@ -82,18 +82,19 @@ class DimLocation(Location):
         same = set(o for o in shared_keys if d1[o] == d2[o])
         return same
 
-    def create_new_location_object(self, values):
+    def create_new_location_object(self, row, values):
         """
         Create a new location object if unique value. Not given a location_uid.
         """
-        loc = Location(values["Country_Name"], values["Region_Name"], values["Division_Name"], values["State_Name"], values["County_Name"], values["City_Name"], values["Town_Name"], values["Neighborhood_Name"])
-        if len(self.location_objs) == 0:
-            self.location_objs.append(loc)
+        found = False
+        loc = Location(row[values["Country_Name"]], values["Region_Name"], values["Division_Name"], row[values["State_Name"]], row[values["County_Name"]], values["City_Name"], values["Town_Name"], values["Neighborhood_Name"])
+        if len(self.locations) == 0:
+            self.locations.append(loc)
         else:
-            for i in self.location_objs:
+            for i in self.locations:
                 if loc == i:
-                    return
-                else:
-                    self.location_objs.append(loc)
-                    return
-        print(len(self.location_objs))
+                    found = True
+                    print("Location already existed ", values)
+            if not found:
+                self.locations.append(loc)
+        return

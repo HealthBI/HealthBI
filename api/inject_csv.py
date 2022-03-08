@@ -27,7 +27,9 @@ class InjectCSV():
         For every object, give it a unique id and inject into HealthBI database.
         """
         #self.insert_temporal()
-        self.insert_temporals()
+        #self.insert_temporals()
+        #self.insert_temporals()
+        self.insert_locations()
         self.insert_categories()
         self.insert_topics()
         self.insert_indicator()
@@ -40,6 +42,24 @@ class InjectCSV():
                     DO UPDATE SET temporal_uid=EXCLUDED.temporal_uid \
                     RETURNING temporal_uid".format(temp.temporal_uid, temp.year))
 
+    def insert_locations(self):
+        for location in self.locations:
+            sql = ("INSERT INTO dim_location (country_name, region_name, division_name, state_name, county_name, city_name, town_name, neighborhood_name) \
+                    VALUES('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}') \
+                    ON CONFLICT (location_uid) \
+                    DO UPDATE SET location_uid = EXCLUDED.location_uid \
+                    RETURNING location_uid;".format(location.country_name, location.region_name, location.division_name, location.state_name, location.county_name, location.city_name, location.town_name, location.neighborhood_name))
+            self.curr.execute(sql)
+
+            try:
+                location.location_uid = self.curr.fetchone()[0]
+                self.conn.commit()
+                print(self.curr.rowcount, "topic records inserted.")
+            except:
+                print("Location %s already exists" % location.location_uid)
+            self.conn.commit()
+        return
+        
     def insert_categories(self):
         print("INSERTING categories...")
         for category in self.categories:

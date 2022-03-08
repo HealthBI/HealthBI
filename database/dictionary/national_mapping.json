@@ -3,10 +3,24 @@
     "DataFile_Name": "National_Health_Interview_Survey.csv",
     "Temporal_UID": {"column_name": "", "value": ""},
     "Location": [
-        {"Country_Name": "", "Region_Name": "", "Division_Name": "", "State_Name": "",
-        "County_Name": "", "City_Name": "","Town_Name": "", "Neighborhood_Name": ""}
+        {"Country_Name": "country", "Region_Name": "", "Division_Name": "", "State_Name": "",
+        "County_Name": "", "City_Name": "city","Town_Name": "", "Neighborhood_Name": ""}
     ],
-    "Category": {"column_name": ["Category"], "value": ""},
-    "Topic": {"column_name": ["Population"], "value": ""},
-    "Indicator": ["BreakOutCategory", "Breakout"]
+
+    "Var_Indicators_Format": "Column_Header",
+    "Categories": [
+        {
+            "Category": "Demographics",
+            "Topics": [
+                {
+                    "Topic": "Population",
+                    "Indicators": 
+                    [
+                        {"Indicator_Name": "Population_Size", "Indicator_Unit": "People"},
+                        {"Indicator_Name": "Population_Density", "Indicator_Unit": "Density"}
+                    ]   
+                }
+            ]
+        }
+    ]
 }
