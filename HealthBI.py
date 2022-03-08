@@ -21,6 +21,8 @@ class HealthBI:
         self.shape_csv()
         # All lists of objects.
         #self.dim_temporal_objs = self.shape.dim_temporal.temporal_objs
+        #self.dim_location_objs = self.shape.dim_location_objs.location_objs
+
         #print(f'dim_temporal_objs: {self.dim_temporal_objs}\n')
         self.inject_shaped_csv()
         # print("Data successfully processed.\n")
@@ -47,6 +49,7 @@ class HealthBI:
         """
         self.shape = ShapeCSV(self.csv_file, self.json_file)
         self.shape.run_shaping()
+        print(self.shape.dim_location_objs.locations)
         return
 
     def inject_shaped_csv(self):

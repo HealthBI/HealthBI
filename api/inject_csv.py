@@ -16,11 +16,12 @@ class InjectCSV():
         self.conn = conn
         self.curr = cursor
         #self.dim_temporal_objs = shape.dim_temporal_objs
-        self.temporals = shape.dim_temporal_objs.temporals
+        #self.temporals = shape.dim_temporal_objs.temporals
+        self.locations = shape.dim_location_objs.locations
+
         self.categories = shape.var_category_objs.categories
         self.topics = shape.var_topic_objs.topics
         self.indicators = shape.var_indicator_objs.indicators
-        self.dim_location_objs = shape.dim_location_objs
     def run_injection(self):
         """
         For every object, give it a unique id and inject into HealthBI database.
