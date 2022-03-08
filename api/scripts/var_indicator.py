@@ -13,6 +13,7 @@ class Categories:
         self.categories = []
         self.num_of_categories = 0
     def add(self, category):
+        found = False
         # returning the category in list of categories
         if self.num_of_categories == 0:
             self.categories.append(category)
@@ -22,13 +23,14 @@ class Categories:
         else:
             for i in range(self.num_of_categories):
                 if category == self.categories[i]:
+                    found = True
                     print("This category has already been created.")
                     return self.categories[i]
-                else: 
-                    self.categories.append(category)
-                    self.num_of_categories += 1
-                    print("A new category has been created: {}.".format(category.category_name))
-                    return self.categories[-1]
+            if not found: 
+                self.categories.append(category)
+                self.num_of_categories += 1
+                print("A new category has been created: {}.".format(category.category_name))
+                return self.categories[-1]
     
 class Topic():
     def __init__(self, category, topic_name):
@@ -43,6 +45,7 @@ class Topics:
         self.topics = []
         self.num_of_topics = 0
     def add(self, topic):
+        found = False
         if self.num_of_topics == 0:
             self.topics.append(topic)
             self.num_of_topics += 1
@@ -52,13 +55,14 @@ class Topics:
             # returning the category in list of categories
             for i in range(self.num_of_topics):
                 if category == self.topics[i]:
+                    found = True
                     print("This topic has already been created: {}.".format(topic.topic_name))
                     return self.topics[i]
-                else: 
-                    self.topics.append(topic)
-                    self.num_of_topics += 1
-                    print("A new topic has been created: {}.".format(topic.topic_name))
-                    return self.topics[-1]
+            if not found: 
+                self.topics.append(topic)
+                self.num_of_topics += 1
+                print("A new topic has been created: {}.".format(topic.topic_name))
+                return self.topics[-1]
 
 class Indicator():
     def __init__(self, topic, indicator_name, indicator_unit):
@@ -78,6 +82,7 @@ class Indicators:
         self.indicators = []
         self.num_of_indicators = 0
     def add(self, indicator):
+        found = False
         if self.num_of_indicators == 0:
             self.indicators.append(indicator)
             self.num_of_indicators += 1
@@ -87,13 +92,14 @@ class Indicators:
             # returning the Indicator in list of indicators
             for i in range(self.num_of_indicators):
                 if indicator == self.indicators[i]:
+                    found = True
                     print("This indicator has already been created.")
                     return self.indicators[i]
-                else: 
-                    self.indicators.append(indicator)
-                    self.num_of_indicators += 1
-                    print("A new indicator has been created: {}.".format(indicator.indicator_name))
-                    return self.indicators[-1]
+            if not found: 
+                self.indicators.append(indicator)
+                self.num_of_indicators += 1
+                print("A new indicator has been created: {}.".format(indicator.indicator_name))
+                return self.indicators[-1]
 
 class IndicatorController:
     def __init__(self) -> None:

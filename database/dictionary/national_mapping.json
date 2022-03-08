@@ -1,5 +1,6 @@
-{ "DataSet_Name":"CHSI",
-    "DataFile_Name": "National.csv",
+{ 
+    "DataSet_Name":"NHIS",
+    "DataFile_Name": "National_Health_Interview_Survey.csv",
     "Temporal_UID": {"column_name": "", "value": ""},
     "Location": [
         {"Country_Name": "", "Region_Name": "", "Division_Name": "", "State_Name": "",

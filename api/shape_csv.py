@@ -20,11 +20,11 @@ class ShapeCSV:
         self.csv_columns = []
         #self.fact_indicator_objs = []
         # Initiate dimension objects. These store the list of objects.
-        self.dim_temporal = DimTemporal(self.mapping_json)
-        self.dim_location = DimLocation(self.mapping_json)
+        self.dim_temporal_objs = DimTemporal(self.mapping_json)
+        #self.dim_location = DimLocation(self.mapping_json)
         self.var_category_objs = None
         self.var_topic_objs = None
-        self.var_indicator_objs = Indicators()
+        self.var_indicator_objs = None
         self.mapping = self.getMapping(mapping_json)
 
     def run_shaping(self):
@@ -51,25 +51,24 @@ class ShapeCSV:
         return dictData
     
     def parse_csv_for_objects(self):
+        mapping = self.mapping
+        ### Add indicators in column headers
         ### check if indicators is in column headers based on dictionary mapping
-        if self.mapping["Var_Indicators_Format"] == "Column_Header":
+        if mapping["Var_Indicators_Format"] == "Column_Header":
             print("Indicators' names are in column headers.")
-            mapping = self.mapping
             self.var_category_objs, self.var_topic_objs, self.var_indicator_objs = IndicatorController().create_var_indicator_with_mapping(mapping)
+        if mapping["Temporal_UID"]["value"] != "" and self.mapping["Temporal_UID"]["column_name"] == "":
+            self.dim_temporal_objs.create_new_temporal_object(mapping["Temporal_UID"]["value"])
         with open(self.csv_file, mode='r', encoding="utf-8-sig") as csv_file:
-            '''
             # Get json values for temporal, location, indicator, and fact_indicator.
-            dim_temporal_json, dim_is_value = self.dim_temporal.get_json_cols()
-            dim_location_json = self.dim_location.get_json_cols()
-            if dim_is_value:
-                self.dim_temporal.create_new_temporal_object(dim_temporal_json)
-            '''
+            #dim_location_json = self.dim_location.get_json_cols()
             # READ CSV
             # Start at the first row of data
             csv_reader = csv.DictReader(csv_file)
             line_count = 1
             for row in csv_reader:
                 '''
+                # TEMPORAL
                 if dim_is_value == False:
                     # TEMPORAL
                     temporal_val = self.dim_temporal.get_csv_val(row, dim_temporal_json)

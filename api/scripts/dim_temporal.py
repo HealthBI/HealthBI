@@ -6,11 +6,18 @@ class Temporal:
     """
     Temporal Object
     """
-    def __init__(self, value, temporal_uid = None):
-        self.uid = temporal_uid
-        self.value = value
+    def __init__(self, temp_value):
+        self.temporal_uid = temp_value
+        self.temp_value = temp_value
+        self.year = None
+<<<<<<< Updated upstream
+        self.month = None
+=======
+>>>>>>> Stashed changes
+    def __eq__(self, other):
+        return self.temp_value == other.temp_value
 
-class DimTemporal(Temporal):
+class DimTemporal():
     """
     Shapes csv dim_temporal columns.
     """
@@ -18,7 +25,8 @@ class DimTemporal(Temporal):
         self.json_file = json_file
         self.json_temporal_cols = []
         self.temporal_val = []
-        self.temporal_objs = []
+        self.temporals = []
+        self.num_of_temporals = 0
 
     def get_json_cols(self):
         """
@@ -36,7 +44,7 @@ class DimTemporal(Temporal):
                     tmp_val = dictData['Temporal_UID'][x]
                     if tmp_val != '':
                         self.json_temporal_cols.append(tmp_val)
-        return self.json_temporal_cols, False
+        return False
 
     def get_csv_val(self, row, json_col):
         """
@@ -52,4 +60,22 @@ class DimTemporal(Temporal):
         """
         Create a new temporal object if unique value. Not given a temporal_uid.
         """
- 
+        found = False
+        temp = Temporal(value)
+        if self.num_of_temporals == 0:
+            self.temporal_objs.append(temp)
+            self.num_of_temporals += 1
+            print("A new temp has been created: %s" % value)
+            return self.temporal_objs[-1]
+        else:
+            for i in range(self.num_of_temporals):
+                if self.temporal_objs[i] == temp:
+                    found = True
+                    print("This temp %s was already read in this csv." % value)
+                    return self.temporal_objs[i]
+            if not found:
+                self.temporal_objs.append(temp)
+                self.num_of_temporals += 1
+                print("A new temp has been created: %s" % value)
+                return self.temporal_objs[-1]
+                

@@ -15,7 +15,12 @@ class InjectCSV():
     def __init__(self, conn, cursor, shape):
         self.conn = conn
         self.curr = cursor
+<<<<<<< Updated upstream
         self.dim_temporal_objs = shape.dim_temporal_objs
+=======
+        #self.dim_temporal_objs = shape.dim_temporal_objs
+        self.temporals = shape.dim_temporal_objs.temporals
+>>>>>>> Stashed changes
         self.categories = shape.var_category_objs.categories
         self.topics = shape.var_topic_objs.topics
         self.indicators = shape.var_indicator_objs.indicators
@@ -25,6 +30,7 @@ class InjectCSV():
         For every object, give it a unique id and inject into HealthBI database.
         """
         #self.insert_temporal()
+        self.insert_temporals()
         self.insert_categories()
         self.insert_topics()
         self.insert_indicator()
@@ -98,6 +104,14 @@ class InjectCSV():
         num = int(str(num) + month + day)
         print(num, "formatting\n")
         return num
+
+    def insert_temporals(self):
+        print("INSERTING temporals...")
+        for temp in self.temporals:
+            sql = ("INSERT INTO dim_temporal VALUES ('{}', '{}', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA') \
+                    ON CONFLICT(temporal_uid) \
+                    DO UPDATE SET temporal_uid=EXCLUDED.temporal_uid \
+                    RETURNING temporal_uid".format(temp.temporal_uid, temp.year))
 
     def insert_categories(self):
         print("INSERTING categories...")
