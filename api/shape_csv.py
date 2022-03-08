@@ -21,7 +21,7 @@ class ShapeCSV:
         #self.fact_indicator_objs = []
         # Initiate dimension objects. These store the list of objects.
         self.dim_temporal_objs = DimTemporal(self.mapping_json)
-        #self.dim_location = DimLocation(self.mapping_json)
+        self.dim_location_objs = DimLocation(self.mapping_json)
         self.var_category_objs = None
         self.var_topic_objs = None
         self.var_indicator_objs = None
@@ -57,27 +57,26 @@ class ShapeCSV:
         if mapping["Var_Indicators_Format"] == "Column_Header":
             print("Indicators' names are in column headers.")
             self.var_category_objs, self.var_topic_objs, self.var_indicator_objs = IndicatorController().create_var_indicator_with_mapping(mapping)
-        if mapping["Temporal_UID"]["value"] != "" and self.mapping["Temporal_UID"]["column_name"] == "":
-            self.dim_temporal_objs.create_new_temporal_object(mapping["Temporal_UID"]["value"])
+        #if mapping["Temporal_UID"]["value"] != "" and self.mapping["Temporal_UID"]["column_name"] == "":
+            #self.dim_temporal_objs.create_new_temporal_object(mapping["Temporal_UID"]["value"])
         with open(self.csv_file, mode='r', encoding="utf-8-sig") as csv_file:
             # Get json values for temporal, location, indicator, and fact_indicator.
-            #dim_location_json = self.dim_location.get_json_cols()
+            dim_location_json = self.dim_location_objs.get_json_cols()
             # READ CSV
             # Start at the first row of data
             csv_reader = csv.DictReader(csv_file)
             line_count = 1
             for row in csv_reader:
-                '''
-                # TEMPORAL
+                '''# TEMPORAL
                 if dim_is_value == False:
                     # TEMPORAL
                     temporal_val = self.dim_temporal.get_csv_val(row, dim_temporal_json)
                     self.dim_temporal.create_new_temporal_object(temporal_val)
-                # LOCATION
-                location_vals = self.dim_location.get_csv_val(row, dim_location_json)
-                self.dim_location.create_new_location_object(location_vals)
                 '''
+                # LOCATION
+                #location_vals = self.dim_location.get_csv_val(row, dim_location_json)
+                self.dim_location_objs.create_new_location_object(row, dim_location_json)
                 line_count += 1
-            # print(self.dim_location.location_vals)
+            print(self.dim_location_objs.locations)
             print(f'Processed {line_count} lines.\n')
         # print(f'dim_temporal_objs: {self.dim_temporal.temporal_objs}\n')

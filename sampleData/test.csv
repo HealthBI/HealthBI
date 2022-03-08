@@ -1,8 +1,8 @@
-year,city, country,
+year,city,country,region
 2421,Philadelphia,United States
 20220223,Los Angeles,United States
 20210212,New York City,United States
 2021,Philadelphia,United States
 2021,,Brazil
-2022,MDW
-202312,MDW
+2022,,,MDW
+202312,,,MDW

@@ -26,7 +26,7 @@ class Location:
             return False
 
 
-class DimLocation(Location):
+class DimLocation():
     """
     Shapes csv dim_location columns.
     """
@@ -34,7 +34,7 @@ class DimLocation(Location):
         self.json_file = json_file
         self.json_location_cols = {}
         self.location_vals = []
-        self.location_objs = []
+        self.locations = []
 
     def get_json_cols(self):
         """
@@ -82,18 +82,20 @@ class DimLocation(Location):
         same = set(o for o in shared_keys if d1[o] == d2[o])
         return same
 
-    def create_new_location_object(self, values):
+    def create_new_location_object(self, row, values):
         """
         Create a new location object if unique value. Not given a location_uid.
         """
-        loc = Location(values["Country_Name"], values["Region_Name"], values["Division_Name"], values["State_Name"], values["County_Name"], values["City_Name"], values["Town_Name"], values["Neighborhood_Name"])
-        if len(self.location_objs) == 0:
-            self.location_objs.append(loc)
+        found = False
+        loc = Location(row[values["Country_Name"]], row[values["Region_Name"]], values["Division_Name"], values["State_Name"], values["County_Name"], row[values["City_Name"]], values["Town_Name"], values["Neighborhood_Name"])
+        if len(self.locations) == 0:
+            self.locations.append(loc)
         else:
-            for i in self.location_objs:
+            for i in self.locations:
                 if loc == i:
-                    return
-                else:
-                    self.location_objs.append(loc)
-                    return
-        print(len(self.location_objs))
+                    found = True
+                    print("Location already existed ", values)
+            if not found:
+                self.locations.append(loc)
+        #print(len(self.locations))
+        return
