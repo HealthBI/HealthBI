@@ -1,9 +1,6 @@
 #!/usr/bin/python
 import csv, json
-from types import NoneType
 from pandas import *
-import sys, os
-
 from api.scripts.var_indicator import Categories, IndicatorController, Topics, Indicators
 from api.scripts.dim_temporal import DimTemporal
 from api.scripts.dim_location import DimLocation
@@ -13,12 +10,12 @@ from api.scripts.dim_location import DimLocation
 class ShapeCSV:
     """
     Takes in csv and fits columns and data to the data model.
+    This class holds the dim_temporal, dim_location, var_indicator, fact_indicator classes which hold the objects.
     """
     def __init__(self, csv_file, mapping_json):
         self.csv_file = csv_file
         self.mapping_json = mapping_json
         self.csv_columns = []
-        #self.fact_indicator_objs = []
         # Initiate dimension objects. These store the list of objects.
         self.dim_temporal_objs = DimTemporal(self.mapping_json)
         #self.dim_location = DimLocation(self.mapping_json)
@@ -37,6 +34,9 @@ class ShapeCSV:
         self.parse_csv_for_objects()
 
     def get_csv_cols(self):
+        """
+        Only reads in first line of csv for the column names.
+        """
         with open(self.csv_file, mode='r', encoding="utf-8-sig") as csv_file:
             csv_reader = csv.DictReader(csv_file)
             line_count = 0
@@ -58,7 +58,7 @@ class ShapeCSV:
             print("Indicators' names are in column headers.")
             self.var_category_objs, self.var_topic_objs, self.var_indicator_objs = IndicatorController().create_var_indicator_with_mapping(mapping)
         if mapping["Temporal_UID"]["value"] != "" and self.mapping["Temporal_UID"]["column_name"] == "":
-            self.dim_temporal_objs.create_new_temporal_object(mapping["Temporal_UID"]["value"])
+            self.dim_temporal_objs.create_new_temporal_object("value", mapping["Temporal_UID"]["value"])
         with open(self.csv_file, mode='r', encoding="utf-8-sig") as csv_file:
             # Get json values for temporal, location, indicator, and fact_indicator.
             #dim_location_json = self.dim_location.get_json_cols()
@@ -72,7 +72,7 @@ class ShapeCSV:
                 if dim_is_value == False:
                     # TEMPORAL
                     temporal_val = self.dim_temporal.get_csv_val(row, dim_temporal_json)
-                    self.dim_temporal.create_new_temporal_object(temporal_val)
+                    self.dim_temporal.create_new_temporal_object("column", temporal_val)
                 # LOCATION
                 location_vals = self.dim_location.get_csv_val(row, dim_location_json)
                 self.dim_location.create_new_location_object(location_vals)

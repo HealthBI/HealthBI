@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import re
 import json
 from pandas import *
 
@@ -9,7 +10,6 @@ class Temporal:
     def __init__(self, temp_value):
         self.temporal_uid = temp_value
         self.temp_value = temp_value
-        self.year = None
     def __eq__(self, other):
         return self.temp_value == other.temp_value
 
@@ -52,26 +52,40 @@ class DimTemporal():
                 return row[key]
         return
 
-    def create_new_temporal_object(self, value):
+    def create_temporal_uid(self):
+        """
+        Creates temporal_uid. Mask to correct number of digits, year, month, and day (bigint). 
+        Note: Uniqueness is not checked here. All objects are created.
+        """
+        month = "00"
+        day = "00"
+        num = int(str(num) + month + day)
+        return num
+
+    def create_new_temporal_object(self, tem_type, value):
         """
         Create a new temporal object if unique value. Not given a temporal_uid.
         """
         found = False
-        temp = Temporal(value)
-        if self.num_of_temporals == 0:
-            self.temporal_objs.append(temp)
-            self.num_of_temporals += 1
-            print("A new temp has been created: %s" % value)
-            return self.temporal_objs[-1]
-        else:
-            for i in range(self.num_of_temporals):
-                if self.temporal_objs[i] == temp:
-                    found = True
-                    print("This temp %s was already read in this csv." % value)
-                    return self.temporal_objs[i]
-            if not found:
-                self.temporal_objs.append(temp)
+        if tem_type == "value":
+            temp = Temporal(value, value)
+            self.temporals.append(temp)
+            return temp
+        if tem_type == "column":
+            if self.num_of_temporals == 0:
+                self.temporals.append(temp)
                 self.num_of_temporals += 1
                 print("A new temp has been created: %s" % value)
-                return self.temporal_objs[-1]
+                return self.temporals[-1]
+            else:
+                for i in range(self.num_of_temporals):
+                    if self.temporals[i] == temp:
+                        found = True
+                        print("This temp %s was already read in this csv." % value)
+                        return self.temporals[i]
+                if not found:
+                    self.temporals.append(temp)
+                    self.num_of_temporals += 1
+                    print("A new temp has been created: %s" % value)
+                    return self.temporals[-1]
                 
