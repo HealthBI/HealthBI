@@ -7,7 +7,7 @@ class Temporal:
     """
     Temporal Object
     """
-    def __init__(self, temp_value):
+    def __init__(self, temporal_uid, temp_value):
         self.temporal_uid = temp_value
         self.temp_value = temp_value
     def __eq__(self, other):
