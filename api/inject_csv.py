@@ -15,12 +15,8 @@ class InjectCSV():
     def __init__(self, conn, cursor, shape):
         self.conn = conn
         self.curr = cursor
-<<<<<<< Updated upstream
-        self.dim_temporal_objs = shape.dim_temporal_objs
-=======
         #self.dim_temporal_objs = shape.dim_temporal_objs
         self.temporals = shape.dim_temporal_objs.temporals
->>>>>>> Stashed changes
         self.categories = shape.var_category_objs.categories
         self.topics = shape.var_topic_objs.topics
         self.indicators = shape.var_indicator_objs.indicators
