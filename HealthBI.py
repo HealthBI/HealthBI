@@ -19,13 +19,8 @@ class HealthBI:
         # Run shaping.
         self.shape = None
         self.shape_csv()
-        # All lists of objects.
-        #self.dim_temporal_objs = self.shape.dim_temporal.temporal_objs
-        #self.dim_location_objs = self.shape.dim_location_objs.location_objs
-
-        #print(f'dim_temporal_objs: {self.dim_temporal_objs}\n')
         self.inject_shaped_csv()
-        # print("Data successfully processed.\n")
+        print("Data successfully processed.\n")
         self.conn.close()
     
     def connect_to_database(self):
