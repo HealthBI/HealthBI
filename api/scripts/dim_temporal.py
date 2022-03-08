@@ -10,10 +10,6 @@ class Temporal:
         self.temporal_uid = temp_value
         self.temp_value = temp_value
         self.year = None
-<<<<<<< Updated upstream
-        self.month = None
-=======
->>>>>>> Stashed changes
     def __eq__(self, other):
         return self.temp_value == other.temp_value
 
