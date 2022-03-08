@@ -32,7 +32,8 @@ class HealthBI:
         """
         conn = psycopg2.connect(
                     database="healthbi", 
-                    user="postgres"
+                    user="postgres",
+                    host="localhost"
         )
         cursor = conn.cursor()
         cursor.execute("select version()")

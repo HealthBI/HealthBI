@@ -20,8 +20,8 @@ class ShapeCSV:
         self.csv_columns = []
         #self.fact_indicator_objs = []
         # Initiate dimension objects. These store the list of objects.
-        #self.dim_temporal = DimTemporal(self.mapping_json)
-        #self.dim_location = DimLocation(self.mapping_json)
+        self.dim_temporal = DimTemporal(self.mapping_json)
+        self.dim_location = DimLocation(self.mapping_json)
         self.var_category_objs = None
         self.var_topic_objs = None
         self.var_indicator_objs = Indicators()

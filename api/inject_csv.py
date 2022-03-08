@@ -1,6 +1,7 @@
 #!/usr/bin/python
 from ast import Return
 import re
+import numpy as np
 
 from matplotlib.pyplot import get
 
@@ -8,14 +9,17 @@ from matplotlib.pyplot import get
 #from scripts.dim_temporal import DimTemporal
 #from scripts.var_indicator import Indicators
 
+from psycopg2.extensions import AsIs
+
 class InjectCSV():
     def __init__(self, conn, cursor, shape):
         self.conn = conn
         self.curr = cursor
-        #self.dim_temporal_objs = shape.dim_temporal_objs
+        self.dim_temporal_objs = shape.dim_temporal_objs
         self.categories = shape.var_category_objs.categories
         self.topics = shape.var_topic_objs.topics
         self.indicators = shape.var_indicator_objs.indicators
+        self.dim_location_objs = shape.dim_location_objs
     def run_injection(self):
         """
         For every object, give it a unique id and inject into HealthBI database.
@@ -39,13 +43,29 @@ class InjectCSV():
             # Insert the object. NOTE: This only injects year. Get json column name
             tem_uid = getattr(obj, 'temporal_uid')
             tem_value = getattr(obj, 'value')
-            print(int(tem_uid))
+            print(tem_uid)
             print(tem_value)
+
+            self.curr.execute("SELECT Year FROM dim_temporal ORDER BY Year")
+            value = self.curr.fetchall()
             # TODO: Insert if json val col does not exist in database. Check the uid after editing incrementation, select count is the best way to check for uniqueness
-            sql = ("INSERT INTO dim_temporal VALUES ('{}', '{}', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA') WHERE ON CONFLICT DO NOTHING;".format(tem_uid, tem_value))
-            self.curr.execute(sql)
-            self.conn.commit()
-            print(self.curr.rowcount, "records inserted.")
+
+            # sql = ("INSERT INTO dim_temporal VALUES ('{}', '{}', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA');".format(tem_uid, tem_value))
+            # self.curr.execute(sql)
+            # self.conn.commit()
+            # print(self.curr.rowcount, "records inserted.")
+            self.curr.execute("SELECT COUNT(*) FROM dim_temporal WHERE Year = %s", [tem_value])
+            check = self.curr.fetchall()
+            print(check, "check json val")
+            count = int(re.findall('[0-9]+', str(check))[0])
+            if(count == 0):
+                sql = ("INSERT INTO dim_temporal VALUES ('{}', '{}', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA');".format(tem_uid, tem_value))
+                self.curr.execute(sql)
+                self.conn.commit()
+                print(self.curr.rowcount, "records inserted.")
+            else:
+                print("Year value already exists in the table")
+            
 
     def create_temporal_uid(self):
         """
@@ -54,9 +74,29 @@ class InjectCSV():
         # TODO: for devang, temporal_uid has to be format yearmonthday (12341212)
         self.curr.execute("SELECT temporal_uid FROM dim_temporal ORDER BY temporal_uid DESC LIMIT 1")
         latest_tem_uid = self.curr.fetchall()
-        print(latest_tem_uid)
+
+        print(latest_tem_uid, "temporal_uid")
+        print(str(latest_tem_uid), "temporal_uid string\n")
+
+        # latest_tem_uid = np.array(latest_tem_uid)
+        # print(len(latest_tem_uid[0]), "temporal_uid length")
+        # print(latest_tem_uid, "temporal_uid np array")
+        # print(latest_tem_uid[0], "temporal_uid list")
+        # print(latest_tem_uid[0][0], "temporal_uid element")
+        # print(type(latest_tem_uid[0][0]), "temporal_uid element type\n")
+
+        month = "00"
+        day = "00"
+        # latest_tem_uid = str(latest_tem_uid[0][0]) + month + day
         num = int(re.findall('[0-9]+', str(latest_tem_uid))[0])
+        num = str(num)
+        num = num.rstrip("0")
+        print(num, "before increment")
+        num = int(num)
         num += 1
+        print(num, "after increment")
+        num = int(str(num) + month + day)
+        print(num, "formatting\n")
         return num
 
     def insert_categories(self):
@@ -119,3 +159,32 @@ class InjectCSV():
                 print("Indicator %s already existed" % indicator.indicator_name)
             self.conn.commit()
         return
+
+
+def insert_location(self):
+
+    for obj in self.dim_location_objs:
+        if hasattr(obj, 'location_uid'):
+            break
+        else:
+            loc_uid = create_location_uid()
+            setattr(obj, 'location_uid', loc_uid)
+        
+        loc_uid = getattr(obj, 'location_uid')
+
+        print(loc_uid, "location_uid")
+
+        sql = ("INSERT INTO DIM_LOCATION VALUES({}, 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA');".format(loc_uid))
+        self.curr.execute(sql)
+        self.conn.commit()
+        print(self.curr.rowcount, "records inserted.")
+
+def create_location_uid(self):
+    self.curr.execute("SELECT location_uid FROM dim_location ORDER BY location_uid DESC LIMIT 1")
+    latest_loc_uid = self.curr.fetchall()
+
+    num = int(re.findall('[0-9]+', str(latest_loc_uid))[0])
+    num += 1
+
+    return num
+
