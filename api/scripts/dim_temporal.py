@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import re
-import json
 from pandas import *
 
 class Temporal:
@@ -22,11 +21,12 @@ class Temporal:
         self.day_month_xxx_year = day_month_xxx_year
         self.dayofweek_xxx = dayofweek_xxx
         self.quarter_q9 = quarter_q9
-        self.quater_q9_year = quarter_q9_year
+        self.quarter_q9_year = quarter_q9_year
         self.season = season
 
     def __eq__(self, other):
-        if (self.year==other.year and 
+        if (self.temporal_uid==other.temporal_uid and
+            self.year==other.year and 
             self.month_99==other.month_99 and 
             self.month_xxx==other.month_xxx and 
             self.month_name==other.month_name and
@@ -35,7 +35,7 @@ class Temporal:
             self.day_month_xxx_year == other.day_month_xxx_year and 
             self.dayofweek_xxx == other.dayofweek_xxx and 
             self.quarter_q9 == other.quarter_q9 and 
-            self.quater_q9_year == other.quarter_q9_year and
+            self.quarter_q9_year == other.quarter_q9_year and
             self.season == other.season):
             return True
         else:
@@ -45,30 +45,9 @@ class DimTemporal():
     """
     Shapes csv dim_temporal columns.
     """
-    def __init__(self, json_file):
-        self.json_file = json_file
-        self.json_temporal_cols = []
-        self.temporal_val = []
+    def __init__(self):
         self.temporals = []
         self.num_of_temporals = 0
-
-    def get_json_cols(self):
-        """
-        Get all json cols for temporal. Based off known required data model fields.
-        Temporal columns: "Temporal_UID": {"column_name": "Year", "value": ""},
-        returns if temporal is a column or value
-        """
-        with open(self.json_file) as json_file:
-            dictData = json.load(json_file)
-            for x in dictData['Temporal_UID']:
-                if x == "value" and dictData['Temporal_UID'][x] != "":
-                    value = dictData['Temporal_UID'][x]
-                    return value, True
-                else:
-                    tmp_val = dictData['Temporal_UID'][x]
-                    if tmp_val != '':
-                        self.json_temporal_cols.append(tmp_val)
-        return False
 
     def get_csv_val(self, row, json_col):
         """
@@ -80,40 +59,85 @@ class DimTemporal():
                 return row[key]
         return
 
-    def create_temporal_uid(self):
+    def create_temporal_uid(self, year, month, day):
         """
         Creates temporal_uid. Mask to correct number of digits, year, month, and day (bigint). 
         Note: Uniqueness is not checked here. All objects are created.
         """
-        month = "00"
-        day = "00"
-        num = int(str(num) + month + day)
-        return num
+        uid = int(year + month + day)
+        return uid
 
-    def create_new_temporal_object(self, tem_type, value):
+    def extract_temporal_value(self, value):
+        year = value[0:4]
+        month = value[4:6]
+        month_name = None
+        day = value[6:9]
+        if month == '01':
+            month_name = "Januaury"
+        elif month == '02':
+            month_name = "February"  
+        elif month == '03':
+            month_name = "March"
+        elif month == '04':
+            month_name = "April"  
+        elif month == '05':
+            month_name = "May"  
+        elif month == '06':
+            month_name = "June"  
+        elif month == '07':
+            month_name = "July"  
+        elif month == '08':
+            month_name = "August"  
+        elif month == '09':
+            month_name = "September"  
+        elif month == '10':
+            month_name = "October"  
+        elif month == '11':
+            month_name = "November"  
+        elif month == '12':
+            month_name = "December"  
+        return year, month, month_name, day
+
+    def create_new_temporal_object(self, tem_type, value, row=None):
         """
         Create a new temporal object if unique value. Not given a temporal_uid.
         """
         found = False
         if tem_type == "value":
-            temp = Temporal(value, value)
+            year, month_99, month_name, day_99 = self.extract_temporal_value(value)
+            month_xxx = None
+            month_xxx_year = None
+            day_month_xxx_year = None
+            temp = Temporal(value, year, month_99, month_xxx, month_name, month_xxx_year, day_99, day_month_xxx_year)
             self.temporals.append(temp)
             return temp
-        if tem_type == "column":
+        if tem_type == "column_name":
+            if re.search("year", value):
+                year = row[value]
+                uid = self.create_temporal_uid(year, "00", "00")
+            else:
+                year = None
+            month_99 = None
+            month_name = None
+            day_99 = None
+            month_xxx = None
+            month_xxx_year = None
+            day_month_xxx_year = None
+            temp = Temporal(uid, year, month_99, month_xxx, month_name, month_xxx_year, day_99, day_month_xxx_year)
             if self.num_of_temporals == 0:
                 self.temporals.append(temp)
                 self.num_of_temporals += 1
-                print("A new temp has been created: %s" % value)
+                print("A new temp has been created: %s" % row[value])
                 return self.temporals[-1]
             else:
                 for i in range(self.num_of_temporals):
                     if self.temporals[i] == temp:
                         found = True
-                        print("This temp %s was already read in this csv." % value)
+                        print("This temp %s was already read in this csv." % row[value])
                         return self.temporals[i]
                 if not found:
                     self.temporals.append(temp)
                     self.num_of_temporals += 1
-                    print("A new temp has been created: %s" % value)
+                    print("A new temp has been created: %s" % row[value])
                     return self.temporals[-1]
                 

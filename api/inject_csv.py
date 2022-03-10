@@ -1,61 +1,80 @@
 #!/usr/bin/python
-from ast import Return
 import re
-import numpy as np
-
-from matplotlib.pyplot import get
-
-#from scripts.dim_location import DimLocation
-#from scripts.dim_temporal import DimTemporal
-#from scripts.var_indicator import Indicators
-
-from psycopg2.extensions import AsIs
 
 class InjectCSV():
     def __init__(self, conn, cursor, shape):
         self.conn = conn
         self.curr = cursor
-        #self.dim_temporal_objs = shape.dim_temporal_objs
         self.temporals = shape.dim_temporal_objs.temporals
-        self.locations = shape.dim_location_objs.locations
+        # self.locations = shape.dim_location_objs.locations
+        # self.categories = shape.var_category_objs.categories
+        # self.topics = shape.var_topic_objs.topics
+        # self.indicators = shape.var_indicator_objs.indicators
 
-        self.categories = shape.var_category_objs.categories
-        self.topics = shape.var_topic_objs.topics
-        self.indicators = shape.var_indicator_objs.indicators
     def run_injection(self):
         """
         For every object, give it a unique id and inject into HealthBI database.
         """
         self.insert_temporals()
-        self.insert_categories()
-        self.insert_topics()
-        self.insert_indicator()
-
-    def get_temporal_info(self, tem_value):
-        """
-        Breaks up the given temporal value to get uid and value.
-        """
-        uid = getattr(tem_value, "temporal_uid")
-        value = getattr(tem_value, "temp_value")
-        year = tem_value[0:3]
-        month = tem_value[4:5]
-        day = tem_value[6:7]
-        return uid, year, month, day
+        # self.insert_categories()
+        # self.insert_topics()
+        # self.insert_indicator()
 
     def insert_temporals(self):
         print("INSERTING temporals...")
         if len(self.temporals) == 1:
-            uid, year, month, day = self.get_temporal_info(self.temporals[0])
-            sql = ("INSERT INTO dim_temporal VALUES ('{}', '{}', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA') \
+            uid = getattr(self.temporals[0], "temporal_uid")
+            year = getattr(self.temporals[0], "year")
+            month = getattr(self.temporals[0], "month_99")
+            month_name = getattr(self.temporals[0], "month_name")
+            day = getattr(self.temporals[0], "day_99")
+            sql = ("INSERT INTO dim_temporal VALUES ('{}', '{}', '{}', 'NA', '{}', 'NA', '{}', 'NA', 'NA', 'NA', 'NA', 'NA') \
                         ON CONFLICT(temporal_uid) \
                         DO UPDATE SET temporal_uid=EXCLUDED.temporal_uid \
-                        RETURNING temporal_uid".format(uid, year))
+                        RETURNING temporal_uid".format(uid, year, month, month_name, day))
+            self.curr.execute(sql)
+            self.conn.commit()
         else:
             for temp in self.temporals:
-                sql = ("INSERT INTO dim_temporal VALUES ('{}', '{}', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA') \
+                uid = getattr(temp, "temporal_uid")
+                year = getattr(temp, "year")
+                month = getattr(temp, "month_99")
+                month_name = getattr(temp, "month_name")
+                day = getattr(temp, "day_99")
+                sql = ("INSERT INTO dim_temporal VALUES ('{}', '{}', '{}', 'NA', '{}', 'NA', '{}', 'NA', 'NA', 'NA', 'NA', 'NA') \
                         ON CONFLICT(temporal_uid) \
                         DO UPDATE SET temporal_uid=EXCLUDED.temporal_uid \
-                        RETURNING temporal_uid".format(temp.temporal_uid, temp.year))
+                        RETURNING temporal_uid".format(uid, year, month, month_name, day))
+                self.curr.execute(sql)
+                self.conn.commit()
+        return
+
+    def insert_location(self):
+
+        for obj in self.dim_location_objs:
+            if hasattr(obj, 'location_uid'):
+                break
+            else:
+                loc_uid = self.create_location_uid()
+                setattr(obj, 'location_uid', loc_uid)
+            
+            loc_uid = getattr(obj, 'location_uid')
+
+            print(loc_uid, "location_uid")
+
+            sql = ("INSERT INTO DIM_LOCATION VALUES({}, 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA');".format(loc_uid))
+            self.curr.execute(sql)
+            self.conn.commit()
+            print(self.curr.rowcount, "records inserted.")
+
+    def create_location_uid(self):
+        self.curr.execute("SELECT location_uid FROM dim_location ORDER BY location_uid DESC LIMIT 1")
+        latest_loc_uid = self.curr.fetchall()
+
+        num = int(re.findall('[0-9]+', str(latest_loc_uid))[0])
+        num += 1
+
+        return num
 
     def insert_categories(self):
         print("INSERTING categories...")
@@ -119,30 +138,4 @@ class InjectCSV():
         return
 
 
-def insert_location(self):
-
-    for obj in self.dim_location_objs:
-        if hasattr(obj, 'location_uid'):
-            break
-        else:
-            loc_uid = create_location_uid()
-            setattr(obj, 'location_uid', loc_uid)
-        
-        loc_uid = getattr(obj, 'location_uid')
-
-        print(loc_uid, "location_uid")
-
-        sql = ("INSERT INTO DIM_LOCATION VALUES({}, 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA');".format(loc_uid))
-        self.curr.execute(sql)
-        self.conn.commit()
-        print(self.curr.rowcount, "records inserted.")
-
-def create_location_uid(self):
-    self.curr.execute("SELECT location_uid FROM dim_location ORDER BY location_uid DESC LIMIT 1")
-    latest_loc_uid = self.curr.fetchall()
-
-    num = int(re.findall('[0-9]+', str(latest_loc_uid))[0])
-    num += 1
-
-    return num
 
