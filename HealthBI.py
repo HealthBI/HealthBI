@@ -44,7 +44,6 @@ class HealthBI:
         """
         self.shape = ShapeCSV(self.csv_file, self.json_file)
         self.shape.run_shaping()
-        print(self.shape.dim_temporal_objs.temporals)
         return
 
     def inject_shaped_csv(self):
