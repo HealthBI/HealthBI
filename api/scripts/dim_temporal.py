@@ -5,25 +5,41 @@ from pandas import *
 
 class Temporal:
     """
-    Temporal Object
+    Temporal Object.
+    The temporal_uid is required to be in format (year, month, date) 00000000.
+    If not given a temporal value, the user can give one column name in the dataset
+    that represents the temporal value.
     """
-    def __init__(self, temporal_uid, temp_value):
-        self.temporal_uid = temp_value
-        self.temp_value = temp_value
-        # Possible temporal attributes.
-        # Year varchar(128)  NOT NULL,
-        # Month_99 varchar(128)  NOT NULL,
-        # Month_XXX varchar(128)  NOT NULL,
-        # Month_Name varchar(128)  NOT NULL,
-        # Month_XXX_Year varchar(128)  NOT NULL,
-        # Day_99 varchar(128)  NOT NULL,
-        # Day_Month_XXX_Year varchar(128)  NOT NULL,
-        # DayOfWeek_XXX varchar(128)  NULL,
-        # Quarter_Q9 varchar(128)  NULL,
-        # Quarter_Q9_Year varchar(128)  NULL,
-        # Season varchar(128)  NULL,
+    def __init__(self, uid, year, month_99, month_xxx, month_name, month_xxx_year, day_99, day_month_xxx_year, dayofweek_xxx=None, quarter_q9=None, quarter_q9_year=None, season=None):
+        self.temporal_uid = uid
+        # Possible temporal value.
+        self.year = year
+        self.month_99 = month_99
+        self.month_xxx = month_xxx
+        self.month_name = month_name
+        self.month_xxx_year = month_xxx_year
+        self.day_99 = day_99
+        self.day_month_xxx_year = day_month_xxx_year
+        self.dayofweek_xxx = dayofweek_xxx
+        self.quarter_q9 = quarter_q9
+        self.quater_q9_year = quarter_q9_year
+        self.season = season
+
     def __eq__(self, other):
-        return self.temp_value == other.temp_value
+        if (self.year==other.year and 
+            self.month_99==other.month_99 and 
+            self.month_xxx==other.month_xxx and 
+            self.month_name==other.month_name and
+            self.month_xxx_year == other.month_xxx_year and
+            self.day_99 == other.day_99 and
+            self.day_month_xxx_year == other.day_month_xxx_year and 
+            self.dayofweek_xxx == other.dayofweek_xxx and 
+            self.quarter_q9 == other.quarter_q9 and 
+            self.quater_q9_year == other.quarter_q9_year and
+            self.season == other.season):
+            return True
+        else:
+            return False
 
 class DimTemporal():
     """
