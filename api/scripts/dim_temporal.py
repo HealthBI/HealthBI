@@ -71,32 +71,48 @@ class DimTemporal():
         year = value[0:4]
         month = value[4:6]
         month_name = None
+        month_xxx = None
+        month_xxx_year = None 
         day = value[6:9]
         if month == '01':
             month_name = "Januaury"
+            month_xxx = "Jan"
         elif month == '02':
-            month_name = "February"  
+            month_name = "February"
+            month_xxx = "Feb"
         elif month == '03':
             month_name = "March"
+            month_xxx = "Mer"
         elif month == '04':
-            month_name = "April"  
+            month_name = "April"
+            month_xxx = "Apr"
         elif month == '05':
             month_name = "May"  
+            month_xxx = "May"
         elif month == '06':
-            month_name = "June"  
+            month_name = "June"
+            month_xxx = "Jun"  
         elif month == '07':
-            month_name = "July"  
+            month_name = "July"
+            month_xxx = "Jul"  
         elif month == '08':
-            month_name = "August"  
+            month_name = "August"
+            month_xxx = "Aug"  
         elif month == '09':
-            month_name = "September"  
+            month_name = "September"
+            month_xxx = "Sep"  
         elif month == '10':
-            month_name = "October"  
+            month_name = "October"
+            month_xxx = "Oct"  
         elif month == '11':
             month_name = "November"  
+            month_xxx = "Nov"
         elif month == '12':
             month_name = "December"  
-        return year, month, month_name, day
+            month_xxx = "Dec"
+        if month_xxx != None:
+            month_xxx_year = month_xxx + year
+        return year, month, month_name, month_xxx, month_xxx_year, day
 
     def create_new_temporal_object(self, tem_type, value, row=None):
         """
@@ -104,9 +120,7 @@ class DimTemporal():
         """
         found = False
         if tem_type == "value":
-            year, month_99, month_name, day_99 = self.extract_temporal_value(value)
-            month_xxx = None
-            month_xxx_year = None
+            year, month_99, month_name, month_xxx, month_xxx_year, day_99 = self.extract_temporal_value(value)
             day_month_xxx_year = None
             temp = Temporal(value, year, month_99, month_xxx, month_name, month_xxx_year, day_99, day_month_xxx_year)
             self.temporals.append(temp)
