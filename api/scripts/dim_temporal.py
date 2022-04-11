@@ -116,7 +116,7 @@ class DimTemporal():
 
     def create_new_temporal_object(self, tem_type, value, row=None):
         """
-        Create a new temporal object if unique value. Not given a temporal_uid.
+        Create a new temporal object.
         """
         found = False
         if tem_type == "value":
