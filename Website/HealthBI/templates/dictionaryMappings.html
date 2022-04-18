@@ -1,11 +1,14 @@
 {% load static %}
-<label for="mappingsDic">Please Enter Mappings:</label>
+<form action="{% url 'upload_mappings' %}" method="POST" enctype="multipart/form-data" class="form-horizontal">
+    {% csrf_token %}
 
-<textarea id="mappingsDic" name="mappingsDic" rows="4" cols="50">
-{{ data }}
+    <label for="mappingsDic">Please Enter Mappings:</label>
 
+    <textarea id="mappingsDic" name="mappingsDic" rows="4" cols="50">
+    {{ data }}
+    </textarea>
 
-
-
+    <input type="submit" value="Submit">
+</form>
 <!-- {{ file }} -->
  
