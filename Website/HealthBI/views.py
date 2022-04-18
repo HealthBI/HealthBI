@@ -48,7 +48,10 @@ def upload_csv(request):
 
         return render(request, 'dictionaryMappings.html', context=context)
 
+def upload_mappings(request):
+    mappings = request.POST["mappingsDic"]
 
-def uploadCsvWithMappings(request):
-    ##Call the scripts with dictionary mappings + csv file content
-    pass
+    context = {
+        'data': mappings,
+    }
+    return render(request, 'displayMappings.html', context=context)
