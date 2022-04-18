@@ -50,5 +50,5 @@ def upload_csv(request):
 
 
 def uploadCsvWithMappings(request):
-    ##Call the scripts with dictionary mappings + csv file content
+    #Call the scripts with dictionary mappings + csv file content
     pass
