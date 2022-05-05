@@ -1,0 +1,7 @@
+{ 
+    "DataSet_Name":"dataset",
+    "DataFile_Name": "dataset.csv",
+    "DataSet_UID": {"column_name": "dataset_uid", "value": ""},
+    "Dataset_Name": {"column_name": "dataset_name", "value": ""},
+    "DataSource_UID": {"column_name": "datasource_uid", "value": ""}
+}
