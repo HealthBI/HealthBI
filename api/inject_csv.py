@@ -16,9 +16,8 @@ class InjectCSV():
         self.conn = conn
         self.curr = cursor
         #self.dim_temporal_objs = shape.dim_temporal_objs
-        #self.temporals = shape.dim_temporal_objs.temporals
+        self.temporals = shape.dim_temporal_objs.temporals
         self.locations = shape.dim_location_objs.locations
-
         self.categories = shape.var_category_objs.categories
         self.topics = shape.var_topic_objs.topics
         self.indicators = shape.var_indicator_objs.indicators
@@ -26,21 +25,41 @@ class InjectCSV():
         """
         For every object, give it a unique id and inject into HealthBI database.
         """
-        #self.insert_temporal()
-        #self.insert_temporals()
-        #self.insert_temporals()
+        self.insert_temporals()
         self.insert_locations()
         self.insert_categories()
         self.insert_topics()
-        self.insert_indicator()
+        self.insert_indicators()
+
+    def get_temporal_info(self, tem_value):
+        """
+        Breaks up the given temporal value to get uid and value.
+        """
+        uid = getattr(tem_value, "temporal_uid")
+        value = getattr(tem_value, "temp_value")
+        #year = tem_value[0:4]
+        #month = tem_value[4:5]
+        #day = tem_value[6:7]
+        return uid, value
 
     def insert_temporals(self):
         print("INSERTING temporals...")
-        for temp in self.temporals:
-            sql = ("INSERT INTO dim_temporal VALUES ('{}', '{}', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA') \
-                    ON CONFLICT(temporal_uid) \
-                    DO UPDATE SET temporal_uid=EXCLUDED.temporal_uid \
-                    RETURNING temporal_uid".format(temp.temporal_uid, temp.year))
+        if len(self.temporals) == 1:
+            uid, value = self.get_temporal_info(self.temporals[0])
+            sql = ("INSERT INTO dim_temporal VALUES ('{}', '{}', '{}', '{}') \
+                        ON CONFLICT(temporal_uid) \
+                        DO UPDATE SET temporal_uid=EXCLUDED.temporal_uid \
+                        RETURNING temporal_uid".format(uid, value[0:4], value[4:6], value[6:8]))
+            self.curr.execute(sql)
+        else:
+            for temp in self.temporals:
+                sql = ("INSERT INTO dim_temporal VALUES ('{}', '{}', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA') \
+                        ON CONFLICT(temporal_uid) \
+                        DO UPDATE SET temporal_uid=EXCLUDED.temporal_uid \
+                        RETURNING temporal_uid".format(temp.temporal_uid, temp.year))
+                self.curr.execute(sql)
+        self.conn.commit()
+        return
 
     def insert_locations(self):
         for location in self.locations:
@@ -59,7 +78,7 @@ class InjectCSV():
                 print("Location %s already exists" % location.location_uid)
             self.conn.commit()
         return
-        
+
     def insert_categories(self):
         print("INSERTING categories...")
         for category in self.categories:
@@ -94,13 +113,13 @@ class InjectCSV():
                 topic.topic_uid = self.curr.fetchone()[0]
                 print(topic.topic_uid)
                 self.conn.commit()
-                print(self.curr.rowcount, "topic records inserted.")
+                print(self.curr.rowcount, "topic records inserted %s." % topic.topic_name)
             except:
                 print("Topic %s already existed" % topic.topic_name)
             self.conn.commit()
         return
 
-    def insert_indicator(self):
+    def insert_indicators(self):
         print("INSERTING indicators...")
         for indicator in self.indicators:
             # return the id of inserted topic in postgres
