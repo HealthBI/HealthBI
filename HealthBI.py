@@ -1,5 +1,16 @@
-#!/usr/bin/python
+#!/usr/bin/python3
+'''
+    Drexel University CCI Senior Project 2022
+    HealthBI
+    Contributors:
+    Corinna Hoang
+    Trang Hoang 
+    Chris Lynch 
+    Charles Porter 
+    Angie Margai-Ren
+'''
 import os
+import re
 import sys
 import psycopg2
 from api.shape_csv import ShapeCSV
@@ -10,14 +21,13 @@ class HealthBI:
     HealthBI.py takes in a csv file as an argument and shapes it to fit the data model.
     This class acts as the Data Controller. 
     """
-    def __init__(self, csv_file, json_file):
-        self.csv_file = csv_file
-        self.json_file = json_file
+    def __init__(self):
+        self.csv_file = None
+        self.json_file = None
         self.inject = None
+        self.shape = None
         # Connect to database.
         self.conn, self.cursor = self.connect_to_database()
-        # Run shaping.
-        self.shape = None
         self.shape_csv()
         self.inject_shaped_csv()
         print("Data successfully processed.\n")
@@ -38,10 +48,12 @@ class HealthBI:
         print("Connection established to: {}.\n".format(data))
         return conn, cursor
     
-    def shape_csv(self):
+    def shape_csv(self, csv_file=None, json_file=None):
         """
         Data gets shaped to fit the data model.
         """
+        self.csv_file = csv_file
+        self.json_file = json_file
         self.shape = ShapeCSV(self.csv_file, self.json_file)
         self.shape.run_shaping()
         return
@@ -54,10 +66,32 @@ class HealthBI:
         self.inject.run_injection()
         return
 
+    def apicmds(self, cmd):
+        """
+        API command options:
+        Help, Correlate, Select, Insert
+        """
+        if re.match('help', cmd, re.IGNORECASE):
+            print("HealthBI Commands:\n")
+            print("help\n")
+            print("correlate temporal location indicators\n")
+            print("insert csvFile jsonFile\n")
+            print("select table\n")
+        elif re.match('correlate', cmd, re.IGNORECASE):
+            print("Correlating...")
+        elif re.match('insert', cmd, re.IGNORECASE):
+            print("Inserting dataset...")
+
 if __name__=="__main__":
-    if len(sys.argv) == 3:
-        csv_exists = os.path.exists(sys.argv[1])
-        json_exists = os.path.exists(sys.argv[2])
+
+    healthbi = HealthBI()
+
+    if len(sys.argv) == 2:
+        run = healthbi.apicmds(sys.argv[1])
+    elif len(sys.argv) == 4:
+        run = healthbi.apicmds(sys.argv[1])
+        csv_exists = os.path.exists(sys.argv[2])
+        json_exists = os.path.exists(sys.argv[3])
         if csv_exists == True and json_exists == True:
             run = HealthBI(sys.argv[1], sys.argv[2])
         elif csv_exists == False:
