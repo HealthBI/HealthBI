@@ -24,3 +24,6 @@ venv.bak/
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+# Apple related
+**/.DS_Store
