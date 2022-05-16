@@ -1,9 +1,9 @@
 #!/usr/bin/python
 import csv, json
 from pandas import *
-from api.database_helpers.var_indicator import Categories, IndicatorController, Topics, Indicators
-from api.database_helpers.dim_temporal import DimTemporal
-from api.database_helpers.dim_location import DimLocation
+from database_helpers.var_indicator import Categories, IndicatorController, Topics, Indicators
+from database_helpers.dim_temporal import DimTemporal
+from database_helpers.dim_location import DimLocation
 # from .dimScripts.var_indicator import VarIndicator
 # from .dimScripts.fact_indicators import FactIndicator
 
