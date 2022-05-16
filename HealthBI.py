@@ -2,8 +2,8 @@
 import os
 import sys
 import psycopg2
-from api.shape_csv import ShapeCSV
-from api.inject_csv import InjectCSV
+from api.database_helpers.shape_csv import ShapeCSV
+from api.database_helpers.inject_csv import InjectCSV
 
 class HealthBI:
     """
