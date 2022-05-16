@@ -1,5 +1,18 @@
 #!/usr/bin/python
+# '''
+#     Drexel University CCI Senior Project 2022
+#     HealthBI
+#     Contributors:
+#     Corinna Hoang
+#     Trang Hoang 
+#     Chris Lynch 
+#     Charles Porter 
+#     Angie Margai-Ren
+# '''
+
 import os
+import re
+import csv
 import sys
 import psycopg2
 from database_helpers.shape_csv import ShapeCSV
@@ -7,8 +20,12 @@ from database_helpers.inject_csv import InjectCSV
 
 class HealthBI:
     """
-    HealthBI.py takes in a csv file as an argument and shapes it to fit the data model.
-    This class acts as the Data Controller. 
+    HealthBI.py is the main object of the HealthBI API. 
+    API functionality includes:
+    - upload_dataset
+    - view_all_datasets
+    - correlate_dataset
+    - select
     """
     def __init__(self, csv_file, json_file):
         self.csv_file = csv_file
@@ -53,6 +70,25 @@ class HealthBI:
         self.inject = InjectCSV(self.conn, self.cursor, self.shape)
         self.inject.run_injection()
         return
+
+    def upload_dataset(self, csv_file, json_file):
+        self.csv_file = csv_file
+        self.json_file = json_file
+        # Connect to database.
+        self.conn, self.cursor = self.connect_to_database()
+        self.shape_csv()
+        self.inject_shaped_csv()
+        print("Data successfully processed.\n")
+        self.conn.close()
+
+    def view_all_datasets(self):
+        pass
+
+    def correlate_dataset(self):
+        pass
+
+    def select(self):
+        pass
 
 if __name__=="__main__":
     if len(sys.argv) == 3:
