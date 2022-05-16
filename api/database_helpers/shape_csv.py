@@ -1,9 +1,9 @@
 #!/usr/bin/python
 import csv, json
 from pandas import *
-from api.database_helpers.var_indicator import Categories, IndicatorController, Topics, Indicators
-from api.database_helpers.dim_temporal import DimTemporal
-from api.database_helpers.dim_location import DimLocation
+from database_helpers.var_indicator import Categories, IndicatorController, Topics, Indicators
+from database_helpers.dim_temporal import DimTemporal
+from database_helpers.dim_location import DimLocation
 # from .dimScripts.var_indicator import VarIndicator
 # from .dimScripts.fact_indicators import FactIndicator
 
@@ -76,6 +76,7 @@ class ShapeCSV:
                 #location_vals = self.dim_location.get_csv_val(row, dim_location_json)
                 self.dim_location_objs.create_new_location_object(dim_location_json)
                 line_count += 1
-            # print(self.dim_location_objs.locations)
+            print(f'dim_temporal_objs: {self.dim_temporal_objs.temporals}\n')
+            print(f'dim_temporal_objs: {self.dim_location_objs.locations}\n')
             print(f'Processed {line_count} lines.\n')
-        # print(f'dim_temporal_objs: {self.dim_temporal.temporal_objs}\n')
+        

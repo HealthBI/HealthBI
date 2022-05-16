@@ -11,9 +11,9 @@ Setup Postgres:
 1. create a database called "healthbi"
 2. run sql scripts needed to create database tables
 
-HealthBI.py is the main script.
+HealthBI.py is the main script with all api functionalities.
 <br>
-Usage: `python HealthBI.py csv_file json_file`
+Usage: `python ./api/HealthBI.py csv_file json_file`
 
 Running Django app:
 1. go to the ./HealthBI/Website directory
