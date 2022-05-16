@@ -15,5 +15,5 @@ CREATE TABLE DIM_TEMPORAL (
     CONSTRAINT Temporal_UID PRIMARY KEY (Temporal_UID)
 );
 INSERT INTO dim_temporal VALUES (-1, 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA');
-INSERT INTO dim_temporal VALUES (2000, '2000', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA') 
+INSERT INTO dim_temporal VALUES (12340000, '2001', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA'); 
 ON CONFLICT (dim_temporal) DO NOTHING;
