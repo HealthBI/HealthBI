@@ -71,6 +71,10 @@ class HealthBI:
         self.inject.run_injection()
         return
 
+
+    ##########################################
+    #       HealthBI API main functions.     #
+    ##########################################
     def upload_dataset(self, csv_file, json_file):
         self.csv_file = csv_file
         self.json_file = json_file
