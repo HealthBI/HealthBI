@@ -9,7 +9,7 @@ Requirements/Dependecies:
 Note: to test, create database in postgres manually before running HealthBI since there is no script to create database yet.
 Setup Postgres:
 1. create a database called "healthbi"
-2. run sql scripts needed to create database tables
+2. run sql scripts needed to create database tables (NOTE: add test first row into each table)
 
 HealthBI.py is the main script with all api functionalities.
 <br>

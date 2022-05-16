@@ -6,7 +6,7 @@ class InjectCSV():
         self.conn = conn
         self.curr = cursor
         self.temporals = shape.dim_temporal_objs.temporals
-        # self.locations = shape.dim_location_objs.locations
+        self.locations = shape.dim_location_objs.locations
         # self.categories = shape.var_category_objs.categories
         # self.topics = shape.var_topic_objs.topics
         # self.indicators = shape.var_indicator_objs.indicators
@@ -16,6 +16,7 @@ class InjectCSV():
         For every object, give it a unique id and inject into HealthBI database.
         """
         self.insert_temporals()
+        self.insert_location()
         # self.insert_categories()
         # self.insert_topics()
         # self.insert_indicator()
@@ -51,7 +52,7 @@ class InjectCSV():
 
     def insert_location(self):
 
-        for obj in self.dim_location_objs:
+        for obj in self.locations:
             if hasattr(obj, 'location_uid'):
                 break
             else:
