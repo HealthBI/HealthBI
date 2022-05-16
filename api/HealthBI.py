@@ -86,9 +86,12 @@ class HealthBI:
         self.conn.close()
 
     def view_all_datasets(self):
+        print("Running \"view_all_datasets\" coommand...")
         # Connect to database.
         self.conn, self.cursor = self.connect_to_database()
-
+        sql = ("SELECT * from imp_dataset;")
+        self.cursor.execute(sql)
+        self.conn.commit()
 
     def correlate_dataset(self):
         # Connect to database.
