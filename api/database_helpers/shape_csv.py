@@ -18,7 +18,7 @@ class ShapeCSV:
         self.csv_columns = []
         # Initiate dimension objects. These store the list of objects.
         self.dim_temporal_objs = DimTemporal()
-        # self.dim_location_objs = DimLocation(self.mapping_json)
+        self.dim_location_objs = DimLocation(self.mapping_json)
         self.var_category_objs = None
         self.var_topic_objs = None
         self.var_indicator_objs = None
@@ -63,7 +63,7 @@ class ShapeCSV:
         
         with open(self.csv_file, mode='r', encoding="utf-8-sig") as csv_file:
             # Get json values for temporal, location, indicator, and fact_indicator.
-            # dim_location_json = self.dim_location_objs.get_json_cols()
+            dim_location_json = self.dim_location_objs.get_json_cols()
             # READ CSV
             # Start at the first row of data
             csv_reader = csv.DictReader(csv_file)
@@ -73,8 +73,8 @@ class ShapeCSV:
                 if mapping["Temporal_UID"]["column_name"]:
                     self.dim_temporal_objs.create_new_temporal_object("column_name", mapping["Temporal_UID"]["column_name"], row)
                 # LOCATION
-        #         #location_vals = self.dim_location.get_csv_val(row, dim_location_json)
-        #         # self.dim_location_objs.create_new_location_object(row, dim_location_json)
+                #location_vals = self.dim_location.get_csv_val(row, dim_location_json)
+                self.dim_location_objs.create_new_location_object(dim_location_json)
                 line_count += 1
             # print(self.dim_location_objs.locations)
             print(f'Processed {line_count} lines.\n')
