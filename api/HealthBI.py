@@ -86,13 +86,17 @@ class HealthBI:
         self.conn.close()
 
     def view_all_datasets(self):
-        pass
+        # Connect to database.
+        self.conn, self.cursor = self.connect_to_database()
+
 
     def correlate_dataset(self):
-        pass
+        # Connect to database.
+        self.conn, self.cursor = self.connect_to_database()
 
     def select(self):
-        pass
+        # Connect to database.
+        self.conn, self.cursor = self.connect_to_database()
 
 if __name__=="__main__":
     if len(sys.argv) == 3:
