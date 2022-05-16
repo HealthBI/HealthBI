@@ -97,9 +97,12 @@ class HealthBI:
         # Connect to database.
         self.conn, self.cursor = self.connect_to_database()
 
-    def select(self):
+    def select(self, query):
         # Connect to database.
         self.conn, self.cursor = self.connect_to_database()
+        sql = ("SELECT {};".format(query))
+        self.cursor.execute(sql)
+        self.conn.commit()
 
 if __name__=="__main__":
     if len(sys.argv) == 3:
