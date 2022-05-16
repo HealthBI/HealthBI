@@ -25,7 +25,6 @@ class Location:
         else:
             return False
 
-
 class DimLocation(Location):
     """
     Shapes csv dim_location columns.
@@ -34,7 +33,7 @@ class DimLocation(Location):
         self.json_file = json_file
         self.json_location_cols = {}
         self.location_vals = []
-        self.location_objs = []
+        self.locations = []
 
     def get_json_cols(self):
         """
@@ -84,16 +83,16 @@ class DimLocation(Location):
 
     def create_new_location_object(self, values):
         """
-        Create a new location object if unique value. Not given a location_uid.
+        Create a new location object.
         """
         loc = Location(values["Country_Name"], values["Region_Name"], values["Division_Name"], values["State_Name"], values["County_Name"], values["City_Name"], values["Town_Name"], values["Neighborhood_Name"])
-        if len(self.location_objs) == 0:
-            self.location_objs.append(loc)
+        if len(self.locations) == 0:
+            self.locations.append(loc)
         else:
-            for i in self.location_objs:
+            for i in self.locations:
                 if loc == i:
                     return
                 else:
-                    self.location_objs.append(loc)
+                    self.locations.append(loc)
                     return
-        print(len(self.location_objs))
+        print(len(self.locations))

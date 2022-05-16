@@ -76,6 +76,7 @@ class ShapeCSV:
                 #location_vals = self.dim_location.get_csv_val(row, dim_location_json)
                 self.dim_location_objs.create_new_location_object(dim_location_json)
                 line_count += 1
-            # print(self.dim_location_objs.locations)
+            print(f'dim_temporal_objs: {self.dim_temporal_objs.temporals}\n')
+            print(f'dim_temporal_objs: {self.dim_location_objs.locations}\n')
             print(f'Processed {line_count} lines.\n')
-        # print(f'dim_temporal_objs: {self.dim_temporal.temporal_objs}\n')
+        
