@@ -1,25 +1,20 @@
 # HealthBI
 
-HealthBI.py is the main script.
+Requirements/Dependecies:
+- Python version: TBD
+- Install pandas version:
+- Install postgres version: 13.4
+- Install psycopg2 version:
+
+Note: to test, create database in postgres manually before running HealthBI since there is no script to create database yet.
+Setup Postgres:
+1. create a database called "healthbi"
+2. run sql scripts needed to create database tables (NOTE: add test first row into each table)
+
+HealthBI.py is the main script with all api functionalities.
 <br>
-Usage: `python HealthBI.py filename`
+Usage: `python ./api/HealthBI.py upload csv_file json_file`
 
-healthBI --> takes and parses both csv and json. 
---> creating a list of unique temporal, location, and indicators objects. 
-- row 0:
-    + temporal.appendIfNew(temporal0)
-    + 
-Fact0(temporal0.uid :uid + location0.uid :none + indicator0.uid + real value0)
-- row 1:
-Fact1(temporal0 + location0 + indicator1 + real value1)
-- row 2:
-Fact2(temporal1 + location1 + indicator1 + real value2)
-...
-- row 200:
-...
-
--- Facts = (fact1, fact2)
--- temporals = [temporal0, temporal1]
-   + uid = insertToDB(temporal0) 
-   + temporal0.uid = uid
--- locations = [location0, location1]
+Running Django app:
+1. go to the ./HealthBI/Website directory
+2. run `python manage.py runserver`
