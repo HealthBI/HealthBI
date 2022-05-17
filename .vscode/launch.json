@@ -11,7 +11,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args" : ["sampleData/DEMOGRAPHICS.csv", "database/dictionary/demographic_mapping.json"]
+            "args" : ["view"]
         }
     ]
 }
