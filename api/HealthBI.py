@@ -8,11 +8,15 @@
 #     Chris Lynch 
 #     Devang Rungta
 # '''
-
 import os
+import sys
+
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), "."))
+)
+
 import re
 import csv
-import sys
 import psycopg2
 from database_helpers.shape_csv import ShapeCSV
 from database_helpers.inject_csv import InjectCSV
