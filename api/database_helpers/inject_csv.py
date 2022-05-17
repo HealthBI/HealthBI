@@ -72,7 +72,7 @@ class InjectCSV():
             try:
                 location.location_uid = self.curr.fetchone()[0]
                 self.conn.commit()
-                print(self.curr.rowcount, "topic records inserted.")
+                print(self.curr.rowcount, "location records inserted.")
             except:
                 print("Location %s already exists" % location.location_uid)
             self.conn.commit()
