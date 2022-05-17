@@ -6,19 +6,26 @@ class InjectCSV():
         self.conn = conn
         self.curr = cursor
         self.temporals = shape.dim_temporal_objs.temporals
-        # self.locations = shape.dim_location_objs.locations
-        # self.categories = shape.var_category_objs.categories
-        # self.topics = shape.var_topic_objs.topics
-        # self.indicators = shape.var_indicator_objs.indicators
+        self.datasources = shape.imp_datasource_objs.datasources
+        self.datasets = shape.imp_dataset_objs.datasets
+        self.datafiles = shape.imp_datafile_objs.datafiles
+        self.locations = shape.dim_location_objs.locations
+        self.categories = shape.var_category_objs.categories
+        self.topics = shape.var_topic_objs.topics
+        self.indicators = shape.var_indicator_objs.indicators
 
     def run_injection(self):
         """
         For every object, give it a unique id and inject into HealthBI database.
         """
         self.insert_temporals()
-        # self.insert_categories()
-        # self.insert_topics()
-        # self.insert_indicator()
+        self.insert_location()
+        self.insert_datasources()
+        self.insert_datasets()
+        self.insert_datafiles()
+        self.insert_categories()
+        self.insert_topics()
+        self.insert_indicator()
 
     def insert_temporals(self):
         print("INSERTING temporals...")
@@ -51,7 +58,7 @@ class InjectCSV():
 
     def insert_location(self):
 
-        for obj in self.dim_location_objs:
+        for obj in self.locations:
             if hasattr(obj, 'location_uid'):
                 break
             else:
@@ -75,6 +82,76 @@ class InjectCSV():
         num += 1
 
         return num
+    
+    def insert_datasources(self):
+        print("Inserting datasources...")
+
+        for datasource in self.datasources:
+
+            sql = ("INSERT INTO IMP_DATASOURCE (DataSource_Name, DataSource_Source) VALUES ('{}', '{}') \
+                    ON CONFLICT(DataSource_Name, DataSource_Source) \
+                    DO UPDATE SET DataSource_Name = EXCLUDED.DataSource_Name \
+                    RETURNING DataSource_UID".format(datasource.DataSource_Name, datasource.DataSource_Source))
+            self.curr.execute(sql)
+
+            try:
+                datasource.DataSource_UID = self.curr.fetchtone()[0]
+                print(datasource.DataSource_UID)
+                self.conn.commit()
+                print(self.curr.rowcount, "datasource records inserted.")
+            except:
+                print("Datasource %s already exists" %datasource.DataSource_Name)
+            
+            self.conn.commit()
+        
+        return
+    
+    def insert_datasets(self):
+        print("Inserting datasets...")
+
+        for dataset in self.datasets:
+
+            sql = ("INSERT INTO IMP_DATASET (DataSet_Name, DataSource_UID) VALUES('{}', '{}') \
+                    ON CONFLICT(DataSet_Name, DataSource_UID) \
+                    DO UPDATE SET DataSet_Name = EXCLUDED.DataSet_Name \
+                    RETURNING DataSet_UID".format(dataset.DataSet_Name, dataset.datsource.DataSource_UID))
+            self.curr.execute(sql)
+
+            try:
+                dataset.DataSet_UID = self.curr.fetchtone()[0]
+                print(dataset.DataSet_UID)
+                self.conn.commit()
+                print(self.curr.rowcount, "dataset records inserted.")
+            except:
+                print("Dataset %s already exists" %dataset.DataSet_Name)
+            
+            self.conn.commit()
+        
+        return
+
+    def insert_datafiles(self):
+        print("Inserting datafiles...")
+
+        for datafile in self.datafiles:
+
+            sql = ("INSERT INTO IMP_DATAFILE (DataFile_Name, Import_Timestamp, DataSet_UID) VALUES ('{}', '{}', '{}') \
+                    ON CONFLICT(DataFile_Name, Import_Timestamp, DataSet_UID) \
+                    DO UPDATE SET DataFile_Name = EXCLUDED.DataFile_Name \
+                    RETURNING Import_UID".format(datafile.DataFile_Name, datafile.Import_Timestamp, datafile.dataset.DataSet_UID))
+
+            self.curr.execute()
+
+            try:
+                datafile.Import_UID = self.curr.fetchtone()[0]
+                print(datafile.Import_UID)
+                self.conn.commit()
+                print(self.curr.rowcount, "datafile records inserted.")
+            except:
+                print("Datafile %s already exists" %datafile.DataFile_Name)
+
+            self.conn.commit()
+
+        return
 
     def insert_categories(self):
         print("INSERTING categories...")
