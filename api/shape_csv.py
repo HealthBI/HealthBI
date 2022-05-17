@@ -3,9 +3,9 @@ import csv, json
 from pandas import *
 import sys, os
 
-from database_helpers.var_indicator import IndicatorController
-from database_helpers.dim_temporal import DimTemporal
-from database_helpers.dim_location import DimLocation
+from api.scripts.var_indicator import IndicatorController
+from api.scripts.dim_temporal import DimTemporal
+from api.scripts.dim_location import DimLocation
 # from .dimScripts.var_indicator import VarIndicator
 # from .dimScripts.fact_indicators import FactIndicator
 
@@ -19,7 +19,7 @@ class ShapeCSV:
         self.mapping_json = mapping_json
         self.csv_columns = []
         # Initiate dimension objects. These store the list of objects.
-        self.dim_temporal_objs = DimTemporal()
+        self.dim_temporal_objs = DimTemporal(self.mapping_json)
         self.dim_location_objs = DimLocation(self.mapping_json)
         self.var_category_objs = None
         self.var_topic_objs = None
@@ -59,10 +59,8 @@ class ShapeCSV:
         if mapping["Var_Indicators_Format"] == "Column_Header":
             print("Indicators' names are in column headers.")
             self.var_category_objs, self.var_topic_objs, self.var_indicator_objs = IndicatorController().create_var_indicator_with_mapping(mapping)
-
         if mapping["Temporal_UID"]["value"] != "" and self.mapping["Temporal_UID"]["column_name"] == "":
             self.dim_temporal_objs.create_new_temporal_object("value", mapping["Temporal_UID"]["value"])
-        
         with open(self.csv_file, mode='r', encoding="utf-8-sig") as csv_file:
             # Get json values for temporal, location, indicator, and fact_indicator.
             dim_location_json = self.dim_location_objs.get_json_cols()
@@ -71,14 +69,15 @@ class ShapeCSV:
             csv_reader = csv.DictReader(csv_file)
             line_count = 1
             for row in csv_reader:
-                # TEMPORAL
-                if mapping["Temporal_UID"]["column_name"]:
-                    self.dim_temporal_objs.create_new_temporal_object("column_name", mapping["Temporal_UID"]["column_name"], row)
+                '''# TEMPORAL
+                if dim_is_value == False:
+                    # TEMPORAL
+                    temporal_val = self.dim_temporal.get_csv_val(row, dim_temporal_json)
+                    self.dim_temporal.create_new_temporal_object(temporal_val)
+                '''
                 # LOCATION
                 #location_vals = self.dim_location.get_csv_val(row, dim_location_json)
                 self.dim_location_objs.create_new_location_object(row, dim_location_json)
                 line_count += 1
-            print(f'dim_temporal_objs: {self.dim_temporal_objs.temporals}\n')
-            print(f'dim_temporal_objs: {self.dim_location_objs.locations}\n')
             print(f'Processed {line_count} lines.\n')
-        
+        # print(f'dim_temporal_objs: {self.dim_temporal.temporal_objs}\n')

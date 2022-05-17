@@ -13,7 +13,7 @@ Setup Postgres:
 
 HealthBI.py is the main script with all api functionalities.
 <br>
-Usage: `python ./api/HealthBI.py csv_file json_file`
+Usage: `python ./api/HealthBI.py upload csv_file json_file`
 
 Running Django app:
 1. go to the ./HealthBI/Website directory
