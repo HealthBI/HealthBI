@@ -2,8 +2,13 @@
 import csv, json
 from pandas import *
 # from api.scripts.var_indicator import Categories, IndicatorController, Topics, Indicators
+from api.scripts.var_indicator import IndicatorController
+from api.scripts.imp_datafile import DatafileController
 from api.scripts.dim_temporal import DimTemporal
 from api.scripts.dim_location import DimLocation
+from api.scripts.imp_datafile import Datafiles
+from api.scripts.imp_datafile import Datasets
+from api.scripts.imp_datafile import Datasources
 # # from .dimScripts.var_indicator import VarIndicator
 # # from .dimScripts.fact_indicators import FactIndicator
 
@@ -19,6 +24,10 @@ class ShapeCSV:
         # Initiate dimension objects. These store the list of objects.
         self.dim_temporal_objs = DimTemporal()
         self.dim_location_objs = DimLocation(self.mapping_json)
+        
+        self.imp_datasource_objs = None
+        self.imp_dataset_objs = None
+        self.imp_datafile_objs = None
 #         self.var_category_objs = None
 #         self.var_topic_objs = None
 #         self.var_indicator_objs = None
@@ -54,9 +63,12 @@ class ShapeCSV:
         mapping = self.mapping
         ### Add indicators in column headers
         ### check if indicators is in column headers based on dictionary mapping
-        # if mapping["Var_Indicators_Format"] == "Column_Header":
-        #     print("Indicators' names are in column headers.")
-        #     self.var_category_objs, self.var_topic_objs, self.var_indicator_objs = IndicatorController().create_var_indicator_with_mapping(mapping)
+        if mapping["Var_Indicators_Format"] == "Column_Header":
+            print("Indicators' names are in column headers.")
+            self.var_category_objs, self.var_topic_objs, self.var_indicator_objs = IndicatorController().create_var_indicator_with_mapping(mapping)
+
+        if mapping["Imp_Datafiles_Format"] == "Datafile_Column":
+            self.imp_datasource_objs, self.imp_dataset_objs, self.imp_datafile_objs = DatafileController().create_imp_datafile_with_mapping(mapping)
 
         if mapping["Temporal_UID"]["value"] != "" and self.mapping["Temporal_UID"]["column_name"] == "":
             self.dim_temporal_objs.create_new_temporal_object("value", mapping["Temporal_UID"]["value"])

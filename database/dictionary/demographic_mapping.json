@@ -21,5 +21,20 @@
                 }
             ]
         }
+    ],
+    "Imp_Datafiles_Format": "Datafile_Column",
+    "Datasources": [
+        {
+            "Datasource": "Datasource",
+            "Datasets": [
+                {
+                    "Dataset": "Dataset",
+                    "Datafiles":
+                    [
+                        {"DataFile_Name": "DataFile_Name", "Import_Timestamp": "Import_Timestamp"}
+                    ]
+                }
+            ]
+        }
     ]
 }
