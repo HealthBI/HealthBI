@@ -140,25 +140,6 @@ class InjectCSV():
             self.conn.commit()
         return
 
-
-def insert_location(self):
-
-    for obj in self.dim_location_objs:
-        if hasattr(obj, 'location_uid'):
-            break
-        else:
-            loc_uid = create_location_uid()
-            setattr(obj, 'location_uid', loc_uid)
-        
-        loc_uid = getattr(obj, 'location_uid')
-
-        print(loc_uid, "location_uid")
-
-        sql = ("INSERT INTO DIM_LOCATION VALUES({}, 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA');".format(loc_uid))
-        self.curr.execute(sql)
-        self.conn.commit()
-        print(self.curr.rowcount, "records inserted.")
-
 def create_location_uid(self):
     self.curr.execute("SELECT location_uid FROM dim_location ORDER BY location_uid DESC LIMIT 1")
     latest_loc_uid = self.curr.fetchall()
@@ -167,4 +148,7 @@ def create_location_uid(self):
     num += 1
 
     return num
+
+def insert_fact_indicators(self):
+        for fact in self.:
 

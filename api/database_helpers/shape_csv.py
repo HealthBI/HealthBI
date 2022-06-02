@@ -2,10 +2,13 @@
 import csv, json
 from pandas import *
 import sys, os
+from database_helpers.fact_indicators import FactIndicator
 
 from database_helpers.var_indicator import IndicatorController
 from database_helpers.dim_temporal import DimTemporal
 from database_helpers.dim_location import DimLocation
+from database_helpers.dim_location import DimLocation
+
 # from .dimScripts.var_indicator import VarIndicator
 # from .dimScripts.fact_indicators import FactIndicator
 
@@ -24,6 +27,7 @@ class ShapeCSV:
         self.var_category_objs = None
         self.var_topic_objs = None
         self.var_indicator_objs = None
+        self.fact_indicator_objs = FactIndicator()
         self.mapping = self.getMapping(mapping_json)
 
     def run_shaping(self):
@@ -54,9 +58,13 @@ class ShapeCSV:
     
     def parse_csv_for_objects(self):
         mapping = self.mapping
+        indicator_in_header = False
+
+        ### INDICATOR
         ### Add indicators in column headers
         ### check if indicators is in column headers based on dictionary mapping
         if mapping["Var_Indicators_Format"] == "Column_Header":
+            indicator_in_header = True
             print("Indicators' names are in column headers.")
             self.var_category_objs, self.var_topic_objs, self.var_indicator_objs = IndicatorController().create_var_indicator_with_mapping(mapping)
 
@@ -71,14 +79,22 @@ class ShapeCSV:
             csv_reader = csv.DictReader(csv_file)
             line_count = 1
             for row in csv_reader:
-                # TEMPORAL
+                ### TEMPORAL
                 if mapping["Temporal_UID"]["column_name"]:
                     self.dim_temporal_objs.create_new_temporal_object("column_name", mapping["Temporal_UID"]["column_name"], row)
-                # LOCATION
+                ### LOCATION
                 #location_vals = self.dim_location.get_csv_val(row, dim_location_json)
-                self.dim_location_objs.create_new_location_object(row, dim_location_json)
+                location_object = self.dim_location_objs.create_new_location_object(row, dim_location_json)
                 line_count += 1
+
+                ### FACT_INDICATOR
+                if indicator_in_header:
+                    for indicator in self.var_indicator_objs.indicators:
+                        self.fact_indicator_objs.create_new_fact_indicator(row, location_object, indicator)
+                    
             print(f'dim_temporal_objs: {self.dim_temporal_objs.temporals}\n')
             print(f'dim_temporal_objs: {self.dim_location_objs.locations}\n')
             print(f'Processed {line_count} lines.\n')
+            print(f'Created {self.fact_indicator_objs.num_fact_indicators} fact indicators\n')
+
         
