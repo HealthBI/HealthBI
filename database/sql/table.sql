@@ -36,8 +36,9 @@ CREATE TABLE DIM_TEMPORAL (
     Season varchar(128)  NULL,
     CONSTRAINT Temporal_UID PRIMARY KEY (Temporal_UID)
 );
-
-INSERT INTO dim_temporal VALUES ('201102', '2011', '02', 'NA');
+INSERT INTO dim_temporal VALUES (-1, 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA');
+INSERT INTO dim_temporal VALUES (12340000, '2001', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA'); 
+ON CONFLICT (dim_temporal) DO NOTHING;
 
 CREATE TABLE VAR_CATEGORY (
     Category_UID bigserial  PRIMARY KEY,
