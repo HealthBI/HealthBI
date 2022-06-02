@@ -1,4 +1,15 @@
+import sys
+import os
+
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+)
+
+from ctypes.wintypes import HACCEL
 from django.shortcuts import render
+from api.HealthBI import HealthBI
+
+FileContents = None
 
 # Create your views here.
 def index(request):
@@ -45,6 +56,8 @@ def upload_csv(request):
         'data': data_dict,
         'file': file_data
         }
+        
+        FileContents = file_data
 
         return render(request, 'dictionaryMappings.html', context=context)
 
@@ -54,4 +67,9 @@ def upload_mappings(request):
     context = {
         'data': mappings,
     }
+
+    hbi = HealthBI()
+    hbi.connect_to_database()
+    hbi.upload_dataset(FileContents, mappings)
+    
     return render(request, 'displayMappings.html', context=context)

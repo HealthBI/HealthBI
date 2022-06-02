@@ -25,6 +25,17 @@ class Location:
         else:
             return False
 
+    def dump(self):
+        return {"Location": {'uid': self.uid, 
+                            'country_name': self.country_name,
+                            'region_name': self.region_name,
+                            'devision_name': self.division_name,
+                            'state_name': self.state_name,
+                            'county_name': self.county_name, 
+                            'city_name': self.city_name,
+                            'town_name': self.town_name,
+                            'neighborhood_name': self.neighborhood_name}}
+                            
 class DimLocation():
     """
     Shapes csv dim_location columns.
@@ -34,6 +45,7 @@ class DimLocation():
         self.json_location_cols = {}
         self.location_vals = []
         self.locations = []
+        self.num_locations = 0
 
     def get_json_cols(self):
         """
@@ -89,11 +101,15 @@ class DimLocation():
         loc = Location(row[values["Country_Name"]], values["Region_Name"], values["Division_Name"], row[values["State_Name"]], row[values["County_Name"]], values["City_Name"], values["Town_Name"], values["Neighborhood_Name"])
         if len(self.locations) == 0:
             self.locations.append(loc)
+            self.num_locations += 1
         else:
-            for i in self.locations:
-                if loc == i:
+            for i in range(self.num_locations):
+                if loc == self.locations[i]:
                     found = True
                     print("Location already existed ", values)
+                    return self.locations[i]
             if not found:
                 self.locations.append(loc)
-        return
+                self.num_locations += 1
+
+        return self.locations[-1]

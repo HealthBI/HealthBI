@@ -3,6 +3,7 @@ drop table dim_temporal;
 drop table var_category;
 drop table var_topic;
 drop table var_indicator;
+drop table FACT_INDICATOR;
 
 CREATE TABLE DIM_LOCATION (
     Location_UID bigserial  NOT NULL,
@@ -24,10 +25,20 @@ CREATE TABLE DIM_TEMPORAL (
     Temporal_UID bigint  NOT NULL,
     Year varchar(128)  NOT NULL,
     Month_99 varchar(128)  NOT NULL,
+    Month_XXX varchar(128)  NOT NULL,
+    Month_Name varchar(128)  NOT NULL,
+    Month_XXX_Year varchar(128)  NOT NULL,
     Day_99 varchar(128)  NOT NULL,
+    Day_Month_XXX_Year varchar(128)  NOT NULL,
+    DayOfWeek_XXX varchar(128)  NULL,
+    Quarter_Q9 varchar(128)  NULL,
+    Quarter_Q9_Year varchar(128)  NULL,
+    Season varchar(128)  NULL,
     CONSTRAINT Temporal_UID PRIMARY KEY (Temporal_UID)
 );
-INSERT INTO dim_temporal VALUES ('201102', '2011', '02', 'NA');
+INSERT INTO dim_temporal VALUES (-1, 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA');
+INSERT INTO dim_temporal VALUES (12340000, '2001', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA'); 
+ON CONFLICT (dim_temporal) DO NOTHING;
 
 CREATE TABLE VAR_CATEGORY (
     Category_UID bigserial  PRIMARY KEY,
@@ -50,8 +61,59 @@ CREATE TABLE VAR_INDICATOR (
     CONSTRAINT VAR_INDICATOR_NAME_TOPIC_UK UNIQUE (Topic_UID, Indicator_Name) NOT DEFERRABLE  INITIALLY IMMEDIATE
 );
 
+-- Reference: INDICATOR_TOPIC (table: VAR_INDICATOR)
+ALTER TABLE VAR_INDICATOR ADD CONSTRAINT INDICATOR_TOPIC
+    FOREIGN KEY (Topic_UID)
+    REFERENCES VAR_TOPIC (Topic_UID)  
+    NOT DEFERRABLE 
+    INITIALLY IMMEDIATE
+;
+
+-- Reference: TOPIC_CATERGORY (table: VAR_TOPIC)
+ALTER TABLE VAR_TOPIC ADD CONSTRAINT TOPIC_CATERGORY
+    FOREIGN KEY (Category_UID)
+    REFERENCES VAR_CATEGORY (Category_UID)  
+    NOT DEFERRABLE 
+    INITIALLY IMMEDIATE
+;
+
+-- Table: FACT_INDICATOR
+CREATE TABLE FACT_INDICATOR (
+    Fact_UID bigserial PRIMARY KEY,
+    Temporal_UID bigint  NOT NULL,
+    Location_UID bigint  NOT NULL,
+    Indicator_UID bigint  NOT NULL,
+    Indicator_Value real  NOT NULL,
+    CONSTRAINT FACT_INDICATOR_PK UNIQUE (Indicator_UID,Location_UID,Temporal_UID) NOT DEFERRABLE  INITIALLY IMMEDIATE
+);
+
+-- Reference: FACT_TABLE_METRIC_DETAILS (table: FACT_INDICATOR)
+ALTER TABLE FACT_INDICATOR ADD CONSTRAINT FACT_TABLE_METRIC_DETAILS
+    FOREIGN KEY (Indicator_UID)
+    REFERENCES VAR_INDICATOR (Indicator_UID)  
+    NOT DEFERRABLE 
+    INITIALLY IMMEDIATE
+;
+
+-- Reference: FACT_TABLE_TEMPORAL (table: FACT_INDICATOR)
+ALTER TABLE FACT_INDICATOR ADD CONSTRAINT FACT_TABLE_TEMPORAL
+    FOREIGN KEY (Temporal_UID)
+    REFERENCES DIM_TEMPORAL (Temporal_UID)  
+    NOT DEFERRABLE 
+    INITIALLY IMMEDIATE
+;
+
+-- Reference: STANDARDIZED_DATA_GEO_LOCATION (table: FACT_INDICATOR)
+ALTER TABLE FACT_INDICATOR ADD CONSTRAINT STANDARDIZED_DATA_GEO_LOCATION
+    FOREIGN KEY (Location_UID)
+    REFERENCES DIM_LOCATION (Location_UID)  
+    NOT DEFERRABLE 
+    INITIALLY IMMEDIATE
+;
+
 select * from dim_location;
 select * from dim_temporal;
 select * from var_category;
 select * from var_topic;
 select * from var_indicator;
+select * from FACT_INDICATOR;

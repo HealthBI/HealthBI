@@ -10,6 +10,7 @@ class InjectCSV():
         self.categories = shape.var_category_objs.categories
         self.topics = shape.var_topic_objs.topics
         self.indicators = shape.var_indicator_objs.indicators
+        self.fact_indicators = shape.fact_indicator_objs.fact_indicators
     def run_injection(self):
         """
         For every object, give it a unique id and inject into HealthBI database.
@@ -19,6 +20,8 @@ class InjectCSV():
         self.insert_categories()
         self.insert_topics()
         self.insert_indicators()
+        self.insert_fact_indicators()
+
 
     def get_temporal_info(self, tem_value):
         """
@@ -72,7 +75,7 @@ class InjectCSV():
             try:
                 location.location_uid = self.curr.fetchone()[0]
                 self.conn.commit()
-                print(self.curr.rowcount, "location records inserted.")
+                #print(self.curr.rowcount, "location records inserted.")
             except:
                 print("Location %s already exists" % location.location_uid)
             self.conn.commit()
@@ -136,5 +139,28 @@ class InjectCSV():
                 print(self.curr.rowcount, "indicator records inserted.")
             except:
                 print("Indicator %s already existed" % indicator.indicator_name)
+            self.conn.commit()
+        return
+
+    def insert_fact_indicators(self):
+        print("INSERTING indicators...")
+        for fact in self.fact_indicators:
+            # return the id of inserted fact_indicator in postgres
+            # if topic already existed return its id
+            sql = ("INSERT INTO fact_indicator (temporal_uid, location_uid, indicator_uid, indicator_value) \
+                    VALUES ({}, {}, {}, {}) \
+                    ON CONFLICT (indicator_uid, location_uid, temporal_uid) \
+                    DO UPDATE SET indicator_uid=EXCLUDED.indicator_uid, \
+                                  location_uid=EXCLUDED.location_uid, \
+                                  temporal_uid=EXCLUDED.temporal_uid\
+                    RETURNING Fact_UID;".format(20111202, fact.location_object.location_uid, fact.indicator_object.indicator_uid, fact.real_value))
+            self.curr.execute(sql)
+            try:
+                fact.fact_indicator_uid = self.curr.fetchone()[0]
+                print(fact.fact_indicator_uid)
+                self.conn.commit()
+                print(self.curr.rowcount, "fact_indicator records inserted.")
+            except:
+                print("Fact Indicator %s already existed" % fact.fact_indicator_uid)
             self.conn.commit()
         return

@@ -8,12 +8,19 @@
 #     Chris Lynch 
 #     Devang Rungta
 # '''
-
 import os
+import sys
+
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), "."))
+)
+
 import re
 import csv
 import sys
+import json
 import psycopg2
+from database_helpers.dim_location import Location
 from database_helpers.shape_csv import ShapeCSV
 from database_helpers.inject_csv import InjectCSV
 
@@ -88,9 +95,13 @@ class HealthBI:
         print("Running \"view_all_datasets\" coommand...")
         # Connect to database.
         self.conn, self.cursor = self.connect_to_database()
-        sql = ("SELECT * from imp_dataset;")
+        sql = ("SELECT * from dim_location;")
         self.cursor.execute(sql)
+        sql_query = self.cursor.fetchall()
         self.conn.commit()
+        locations = [Location(*x) for x in sql_query]
+        json_locations = json.dumps([o.dump() for o in locations], indent=3)
+        return json_locations
 
     def correlate_dataset(self):
         # Connect to database.
@@ -117,3 +128,6 @@ if __name__=="__main__":
                 print("JSON file does not exist.")
         else:
             print("Usage: python ./api/HealthBI.py upload csvFile jsonFile")
+    else:
+        if sys.argv[1] == "view":
+            run = healthbi.view_all_datasets()
